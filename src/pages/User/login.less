@@ -1,0 +1,203 @@
+@import '~antd/lib/style/themes/default.less';
+
+.title1 {
+  font-size: 19px;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 500;
+  color: rgba(183, 187, 191, 1);
+  line-height: 28px;
+  margin-bottom: 1rem;
+}
+.title {
+  font-size: 23px;
+  font-family: PingFangSC-Semibold, PingFang SC;
+  font-weight: 600;
+  color: rgba(15, 19, 44, 1);
+  line-height: 36px;
+}
+
+.main {
+  min-width: 360px;
+  width: 20vw;
+  height: 100%;
+  // margin: 0 auto;
+  background: #fff;
+  position: relative;
+  // position: absolute;
+  // transform: translate(-50%, -50%);
+  // top: 50%;
+  // left: 50%;
+
+  @media screen and (max-width: @screen-sm) {
+    width: 95%;
+  }
+  :global {
+    .ant-input{
+      height: 34px;
+    }
+    .login-form {
+      min-width: 300px;
+      width: 17vw;
+      margin: 0 auto;
+      height: auto;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+    }
+    .login-form-forgot {
+      float: right;
+    }
+    .login-form-button {
+      width: 100%;
+      height: 36px;
+    }
+    .ant-form-item {
+      margin-bottom: 2.5rem;
+    }
+    .ant-form-item-label {
+      line-height: 23px;
+    }
+    .ant-form-item-required {
+      font-size: 16px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: rgba(141, 144, 147, 1);
+      line-height: 25px;
+    }
+    input {
+      background: #fafafb;
+    }
+    .ant-btn-primary {
+      background-color: #1b2d53;
+      border-color: #1b2d53;
+    }
+    .ant-btn-primary:active,
+    .ant-btn-primary.active {
+      color: #fff;
+      background-color: #0e1c3a;
+      border-color: #0e1c3a;
+    }
+    .ant-btn-primary:hover,
+    .ant-btn-primary:focus {
+      color: #fff;
+      background-color: #4a5773;
+      border-color: #4a5773;
+    }
+    // .ant-btn:active,
+    // .ant-btn.active {
+    //   color: #0e1c3a;
+    //   background-color: #fff;
+    //   border-color: #0e1c3a;
+    // }
+    // .ant-btn:hover,
+    // .ant-btn:focus {
+    //   color: #4a5773;
+    //   background-color: #fff;
+    //   border-color: #4a5773;
+    // }
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: auto;
+  background: @layout-body-background;
+  background: #3e4f71;
+  justify-content: center;
+}
+
+.lang {
+  text-align: right;
+  width: 100%;
+  height: 40px;
+  line-height: 44px;
+  :global(.ant-dropdown-trigger) {
+    margin-right: 24px;
+  }
+}
+
+.content {
+  min-height: 480px;
+  height: 58vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  :global {
+    .ant-carousel {
+      height: 100%;
+    }
+    .slick-slider {
+      width: 60rem;
+      height: 100%;
+    }
+  }
+}
+
+@media (min-width: @screen-md-min) {
+  .container {
+    // background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
+    background-repeat: no-repeat;
+    background-position: center 110px;
+    background-size: 100%;
+  }
+}
+
+.user_header {
+  height: 64px;
+  background: #fff;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.14);
+  line-height: 64px;
+  cursor: pointer;
+  img {
+    display: inline-block;
+    width: 28px;
+    height: 24px;
+    margin-right: 5px;
+    vertical-align: text-bottom;
+  }
+  span {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+  }
+}
+
+.back {
+  min-height: 480px;
+  height: 58vh;
+  background-color:#1b2c57;
+  background-size: cover;
+  background-repeat: no-repeat;
+  text-align: right;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 3rem;
+  padding-right: 2rem;
+}
+.cal0 {
+  background-image: url(@/assets/cydt.png);
+}
+.cal1 {
+  background-image: url(@/assets/zhzs.png);
+}
+.cal2 {
+  background-image: url(@/assets/znxmgl.png);
+}
+.calTitle {
+  font-size: 34px;
+  font-family: PingFangSC-Semibold, PingFang SC;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1);
+  line-height: 58px;
+}
+.calSubTitle {
+  font-size: 22px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+  line-height: 33px;
+}
