@@ -1,4 +1,3 @@
-
 export default [
   {
     path: '/user',
@@ -13,18 +12,51 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/welcome',
+        redirect: '/project',
       },
       {
-        path:'/welcome',
-        name: 'welcome',
-        component: './Welcome',
+        path:'/project',
+        name: 'project',
+        component: './Project',
       },
       {
-        path: '/account',
-        name: 'account',
-        hideInMenu: true,
-        component: './User/Setting',
+        path: '/tasks',
+        name: 'tasks',
+        routes: [
+          {
+            path: '/tasks',
+            redirect: '/tasks/list',
+          },
+          { 
+            path: '/tasks/relationship',
+            name: 'relationship',
+            component: './Tasks/Relationship',
+            extra: true,
+          },
+          {
+            path: '/tasks/create',
+            name: 'create',
+            component: './Tasks/Create',
+            extra: true,
+          },
+          {
+            path: '/tasks/list',
+            name: 'list',
+            component: './Tasks/List',
+            extra: true,
+          },
+          {
+            path: '/tasks/edit',
+            name: 'edit',
+            component: './Tasks/Edit',
+          },
+          {
+            path: '/tasks/data',
+            name: 'data',
+            component: './Tasks/Data',
+            extra: true,
+          }
+        ]
       },
       {
         component: './404',

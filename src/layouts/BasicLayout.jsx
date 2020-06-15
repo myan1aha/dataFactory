@@ -17,7 +17,9 @@ import logo from '../assets/logo.png';
  */
 const menuDataRender = menuList =>
   menuList.map(item => {
+    // console.log(item);
     const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
+    // console.log(localItem);
     return localItem;
   });
 
@@ -58,9 +60,10 @@ const BasicLayout = props => {
         if (menuItemProps.isUrl) {
           return defaultDom;
         }
+        // console.log(menuItemProps);
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
-      footerRender={()=>{}}
+      footerRender={() => {}}
       menuDataRender={menuDataRender}
       formatMessage={formatMessage}
       rightContentRender={rightProps => <RightContent {...rightProps} />}
