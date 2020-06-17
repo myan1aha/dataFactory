@@ -1,11 +1,13 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable object-shorthand */
 import React from 'react';
-import { Button, Icon, Cascader } from 'antd';
+import { Button, Icon, Input } from 'antd';
 
 // import { render } from 'react-dom';
 // eslint-disable-next-line import/no-unresolved
 import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
+
+import LazyCascader from './LazyCascader';
 
 import styles from './index.less';
 
@@ -152,15 +154,15 @@ class DynamicFieldSet extends React.Component {
   render() {
     const { list = [] } = this.state;
     // const list = [...document.getElementsByClassName('cascader')];
-    const { label } = this.props;
+    const { label, name } = this.props;
     // console.log(this.props);
 
     return (
       <React.Fragment>
         <SortableContainer onSortEnd={this.onSortEnd} useDragHandle helperClass="is-moving">
-          {list.map((v, index) => 
-          { console.log(v, index);
-          return (
+          {list.map((v, index) =>
+            // console.log(v, index);
+           (
             <SortableItem
               // eslint-disable-next-line react/no-array-index-key
               key={`item-${index}`}
@@ -168,9 +170,11 @@ class DynamicFieldSet extends React.Component {
               value={
                 <div className={styles.inputWrapper}>
                   {/* <Input value={v.value} onChange={e => this.onChange(e, v)} /> */}
-                  <Cascader className="cascader"
-                    options={options}
-                    value={v.value} onChange={e => this.onChange(e, v)}/>
+                  { name === 'order' ? <Input value={v.value} onChange={e => this.onChange(e, v)}></Input>
+                    : <LazyCascader className="cascader"
+                      options={options}
+                      value={v.value} onChange={e => this.onChange(e, v)}/>
+                  }
                   <Icon
                     theme="filled"
                     className="dynamic-delete-button"
@@ -181,7 +185,7 @@ class DynamicFieldSet extends React.Component {
                 </div>
               }
             />
-          )}
+          )
           )}
         </SortableContainer>
         <div style={{ marginTop: '-10px' }}>

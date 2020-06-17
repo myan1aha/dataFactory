@@ -1,10 +1,13 @@
+/* eslint-disable max-len */
 import React from 'react';
 import { Breadcrumb, Form, Input, Button } from 'antd';
+import { connect } from 'dva';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Link from 'umi/link';
 import options from './options'
-// import CreateForm from './createForm'
+import InsertFrom from './InsertForm'
+// import LazyCascader from './LazyCascader'
 
 const { TextArea } = Input;
 
@@ -22,6 +25,17 @@ const tailLayout = {
         span: 8,
     },
 };
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 4 },
+        sm: { span: 4 },
+    },
+    wrapperCol: {
+        xs: { span: 8 },
+        sm: { span: 8 },
+    },
+};
+
 // const formItemLayout = {
 //     labelCol: {
 //         xs: { span: 24 },
@@ -32,10 +46,45 @@ const tailLayout = {
 //         sm: { span: 20 },
 //     },
 // };
+function formatValues(values) {
+    const params = { ...values };
+    return params;
+}
 
-// eslint-disable-next-line react/prefer-stateless-function
+@Form.create()
+@connect(({ task }) => ({
+    industryList: task.industryList,
+}))
 class TasksCreate extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+        }
+    }
+
+    onAdd = () => {
+        const { userId } = this.props;
+        this.props.form.validateFieldsAndScroll((err, values) => {
+          if (err) return;
+          this.onAddTask({ ...formatValues(values), userId });
+        });
+    };
+
+    onAddTask = values => {
+        this.props
+          .dispatch({
+            type: 'task/addTask',
+            payload: values,
+          })
+          .then(res => {
+            if (res) {
+              this.closeModal();
+            }
+          });
+    };
+
     render() {
+        const { getFieldDecorator, getFieldsValue } = this.props.form;
         return (
             <div>
                 <Breadcrumb >
@@ -62,25 +111,35 @@ class TasksCreate extends React.Component {
                                         <Form.Item
                                             label={`${item.label}`}
                                             name={`${item.name}`}
-                                            rules={[
-                                            {
-                                                required: true,
-                                                message: `请输入${item.label}`,
-                                            },
-                                            ]}
                                             key={item.key}
+                                            {...formItemLayout}
                                         >
-                                            { item.type === 'input' ? <Input placeholder={`请输入${item.label}`}/>
-                                            : <TextArea></TextArea>
-                                            }
+                                            {getFieldDecorator(item.name, {
+                                                rules: [
+                                                  {
+                                                    required: true,
+                                                    message: `请输入${item.label}`,
+                                                  },
+                                                ],
+                                            })(
+                                                 item.type === 'input' ? <Input placeholder={`请输入${item.label}`}/>
+                                                                        : <TextArea></TextArea>,
+                                            )}
                                         </Form.Item>
                                     );
                                 case 'insertForm':
                                     return (
-                                        <Form.Item
-
-                                        >
-                                            <Input placeholder="222"></Input>
+                                        // eslint-disable-next-line max-len
+                                        <Form.Item label={item.label} {...formItemLayout} key={item.key}>
+                                        {getFieldDecorator(item.name, {
+                                            rules: [
+                                            {
+                                                required: true,
+                                                message: `请输入${item.label}`,
+                                            },
+                                            ],
+                                        })}
+                                           <InsertFrom label={item.label} required={!item.noneed} />
                                         </Form.Item>
                                     );
                                 default: return null;
@@ -88,7 +147,7 @@ class TasksCreate extends React.Component {
                         })
                     }
                     <Form.Item {...tailLayout}>
-                        <Button type="primary">立即创建</Button>
+                        <Button type="primary" onClick={this.onAdd}>立即创建</Button>
                         <Button type="dashed" style={{ marginLeft: '10px' }}>取消</Button>
                     </Form.Item>
                 </Form>

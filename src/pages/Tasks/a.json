@@ -1,0 +1,31 @@
+{
+    "body":
+    [{
+        "dataOutputs":["MongoCollection:/192.168.1.36:27017/res_kb_process/res_kb_process_patent"],
+        "dataInputs":["MongoCollection:/192.168.1.36:27017/res_kb/res_kb_patent"],
+        "description":"大学实体建立",
+        "parentNode":"university_kbp9",
+        "command":[{"command":"ls"},{"command.1":"echo hello2"}],
+        "numRetry":3,
+        "retryInterval":5000,
+        "taskName":"university_kbp10",
+        "id":"TaskEntity/63128929",
+        "projectName":"test2",
+        "taskDependencies":"university_clean"
+    },
+    {
+        "dataOutputs":["MongoCollection:/192.168.1.36:27017/res_kb_process/res_kb_process_patent"],
+        "dataInputs":["MongoCollection:/192.168.1.36:27017/res_kb/res_kb_patent"],
+        "description":"大学实体建立",
+        "parentNode":"",
+        "command":[{"command":"pwd"},{"command.1":"echo xiugai_01"}],
+        "numRetry":3,
+        "retryInterval":5000,
+        "taskName":"university_kbp9",
+        "id":"TaskEntity/63129197",
+        "projectName":"test2",
+        "taskDependencies":"university_clean"
+    }],
+"header":
+    {"code":200,"message":"success"}
+}

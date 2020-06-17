@@ -49,6 +49,7 @@ export default [
             path: '/tasks/edit',
             name: 'edit',
             component: './Tasks/Edit',
+            hideInMenu: true,
           },
           {
             path: '/tasks/data',
