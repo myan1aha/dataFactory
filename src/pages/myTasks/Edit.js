@@ -1,12 +1,10 @@
 import React from 'react';
-import { Breadcrumb, Form, Input, Button, Select } from 'antd';
+import { Breadcrumb, Form, Input, Button, Spin } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
 import options from './options'
 import InsertForm from './InsertForm'
-// import Multi from './MuInput';
-import OrderInput from './OrderInput'
 
 const { TextArea } = Input;
 const layout = {
@@ -34,24 +32,68 @@ const formItemLayout = {
     },
 };
 
+function value2form(values) {
+    const params = { ...values };
+    params.parNode = params.parentNode;
+    delete params.parentNode;
+    // params.dataInputs = params.dataInputs.map(v => v.split('/'));
+    // params.dataOutputs = params.dataOutputs.map(v => v.split('/'));
+    params.command = params.command.map(v => v[Object.keys(v)[0]])
+    // params.numRetry = Number(params.numRetry);
+    // params.retryInterval = Number(params.retryInterval);
+    return params;
+}
+
+export function formatValues(values) {
+    let params = { ...values };
+    params.parentNode = params.parentNode;
+    delete params.parNode;
+    params.dataInputs = params.dataInputs.map(v => v.join('/'));
+    params.dataOutputs = params.dataOutputs.map(v => v.join('/'));
+    params.command = params.command.map((v, index) => ({
+        [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
+    }))
+    params.numRetry = Number(params.numRetry);
+    params.retryInterval = Number(params.retryInterval);
+    return params;
+}
 
 @Form.create()
-@connect(({ task }) => ({
+@connect(({ task, loading }) => ({
     // industryList: task.industryList,
-    list: task.list,
+    task,
+    loadingTask: loading.models.task,
 }))
 class TasksEdit extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            // eslint-disable-next-line react/no-unused-state
-            form: {},
-        }
+    // constructor(props) {
+    //     super(props);
+    //     // this.state = {
+    //     //     form: {},
+    //     // }
+    // }
+    
+
+    // eslint-disable-next-line react/sort-comp
+    saveTask = () => {
+        this.props.form.validateFieldsAndScroll((err, values) => {
+        if (err) return;
+        this.onEditTask({ ...formatValues(values) });
+        });
     }
 
-    onAdd = () => {
-        console.log('add');
-    }
+    onEditTask = values => {
+        console.log(values);
+        this.props.dispatch({
+            type: 'task/editTask',
+            payload: values,
+        }).then(res => {
+            if (res) {
+              this.props.history.push({ pathname: '/myTasks/list' });
+            }
+          }, err => {
+              console.log(err);
+          });
+    };
 
     onCancel = () => {
         this.props.history.goBack();
@@ -68,27 +110,25 @@ class TasksEdit extends React.Component {
         }
       };
 
-    formatForm = () => {
-        // const { getFieldsValue } = this.props;
-        const data = this.props.location.query;
-
-        // [1, 2, 3, 4].forEach(v => (data[`quarter${v}`] = ''));
-        // (data.records || []).forEach(v => {
-        //     data[`quarter${v.quarter}`] = v.investment;
-        // });
-        data.proName = 'pro';
-        this.props.form.setFieldsValue({
-            taskName: data.name,
-            // type: data.type,
-            proName: data.proName,
+    componentDidMount() {
+        // const { role, areaCode, userId } = this.props.permission;
+        this.props.dispatch({
+          type: 'task/getTaskDetail',
+          payload: {
+            id: this.props.location.query.id,
+          },
         });
-    };
+        setTimeout(() => {
+            const data = this.props.task.selectDetail;
+            console.log(data);
+            if (data) {
+                this.props.form.setFieldsValue(value2form(data));
+            }
+        }, 500);
+      }
 
     render() {
-        console.log(this.props);
-        const { getFieldDecorator, getFieldsValue } = this.props.form;
-        // console.log('fields', getFieldsValue());
-        const data = this.props.location.query;
+        const { getFieldDecorator } = this.props.form;
         return (
             <div>
                 <Breadcrumb >
@@ -103,6 +143,7 @@ class TasksEdit extends React.Component {
                     </Breadcrumb.Item>
                 </Breadcrumb>
                 <br></br>
+                <Spin spinning={this.props.loadingTask}>
                 <Form
                     {...layout}
                     name="basic"
@@ -127,34 +168,12 @@ class TasksEdit extends React.Component {
                                                     validator: this.validator,
                                                   },
                                                 ],
-                                                // eslint-disable-next-line max-len
-                                                initialValue: data[item.name] ? data[item.name] : null,
                                             })(
                                                  item.type === 'input' ? <Input placeholder={`请输入${item.label}`}/>
                                                                         : <TextArea></TextArea>,
                                             )}
                                         </Form.Item>
                                     );
-                                case 'select':
-                                    return (
-                                        <Form.Item
-                                            label={`${item.label}`}
-                                            name={`${item.name}`}
-                                            key={item.key}
-                                            {...formItemLayout}
-                                        >
-                                            {getFieldDecorator(item.name, {
-                                                rules: [
-                                                  {
-                                                    required: true,
-                                                    message: `请输入${item.label}`,
-                                                  },
-                                                ],
-                                            })(
-                                                 <Select></Select>,
-                                            )}
-                                        </Form.Item>
-                                    )
                                 case 'insertForm':
                                     // console.log(item.label);
                                     return (
@@ -163,13 +182,13 @@ class TasksEdit extends React.Component {
                                         {getFieldDecorator(item.name, {
                                             rules: [
                                             {
-                                                required: true,
+                                                required: false,
                                                 message: `请输入${item.label}`,
                                             },
                                             ],
                                         })(
                                             // eslint-disable-next-line max-len
-                                            <InsertForm label={item.label} required={!item.noneed} name={item.name}/>,
+                                            <InsertForm action="edit" label={item.label} name={item.name}/>,
                                         )}
                                         </Form.Item>
                                     );
@@ -178,10 +197,11 @@ class TasksEdit extends React.Component {
                         })
                     }
                     <Form.Item {...tailLayout}>
-                        <Button type="primary" onClick={this.onAdd}>保存</Button>
+                        <Button type="primary" onClick={this.saveTask}>保存</Button>
                         <Button type="dashed" style={{ marginLeft: '10px' }} onClick={this.onCancel}>取消</Button>
                     </Form.Item>
                 </Form>
+                </Spin>
             </div>
 
         )

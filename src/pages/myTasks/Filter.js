@@ -2,8 +2,8 @@ import { Component } from 'react';
 import { Input, DatePicker, Divider } from 'antd';
 // import InvestCheck from './InvestCheck';
 
-import styles from './index.less'
-import areas from '@/utils/area';
+import styles from './index2.less'
+// import areas from '@/utils/area';
 
 // import moment from 'moment';
 // import { stringify } from 'qs';
@@ -183,9 +183,9 @@ export default class Filter extends Component {
           </div>
           <div className={styles.filter}>
             <div className={styles.filterBold}>投资规模</div>
-            <div>
+            {/* <div>
               <InvestCheck list={scaleList} onChange={this.onScaleChange} />
-            </div>
+            </div> */}
           </div>
         </div>
         <div className={styles.filterBold} style={{ marginTop: 18 }}>

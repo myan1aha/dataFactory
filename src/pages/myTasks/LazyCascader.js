@@ -91,6 +91,7 @@ export default class LazyOptions extends React.Component {
         loadData={this.loadData}
         onChange={this.onChange}
         changeOnSelect
+        value={this.props.value}
       />
     );
   }

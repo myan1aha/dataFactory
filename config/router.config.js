@@ -20,41 +20,40 @@ export default [
         component: './Project',
       },
       {
-        path: '/tasks',
+        path: '/myTasks',
         name: 'tasks',
         routes: [
           {
-            path: '/tasks',
-            redirect: '/tasks/list',
+            path: '/myTasks',
+            redirect: '/myTasks/list',
           },
           { 
-            path: '/tasks/relationship',
+            path: '/myTasks/relationship',
             name: 'relationship',
-            component: './Tasks/Relationship',
+            component: './myTasks/Relationship',
             extra: true,
           },
           {
-            path: '/tasks/create',
+            path: '/myTasks/create',
             name: 'create',
-            component: './Tasks/Create',
-            extra: true,
+            component: './myTasks/Create',
           },
           {
-            path: '/tasks/list',
+            path: '/myTasks/list',
             name: 'list',
-            component: './Tasks/List',
+            component: './myTasks/List',
             extra: true,
           },
           {
-            path: '/tasks/edit',
+            path: '/myTasks/edit',
             name: 'edit',
-            component: './Tasks/Edit',
+            component: './myTasks/Edit',
             hideInMenu: true,
           },
           {
-            path: '/tasks/data',
+            path: '/myTasks/data',
             name: 'data',
-            component: './Tasks/Data',
+            component: './myTasks/Data',
             extra: true,
           }
         ]

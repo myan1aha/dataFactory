@@ -1,14 +1,4 @@
-import {
-  getList,
-  // listInvestmentScale,
-  addTask,
-  editTask,
-  // getAreaDetail,
-  // listIndustry,
-  portTask,
-  // deleteTask,
-  // exportTask,
-} from './service';
+import { getList, addTask, editTask, portTask, deleteTask, getTaskDetail } from './service';
 
 let PAGESIZE = 10;
 if (document.body.clientHeight - 300 > 0) {
@@ -34,39 +24,29 @@ const initialValue = {
   page: 1,
   pageSize: PAGESIZE,
   total: 0,
+  selectDetail: {},
+  scaleList: [],
   filter: {
-
+    proName: '',
+    taskName: '',
+    dataInputs: [],
+    dataOutputs: [],
+    taskDependencies: '',
+    parentNode: '',
+    command: [],
+    numRetry: '',
+    retryInterval: '',
+    description: '',
+    owner: '',
   },
-  // selectDetail: {},
-  // industryList: [],
-  // scaleList: [],
 };
 
 export default {
   namespace: 'task',
   state: initialValue,
   effects: {
-    // *listIndustry({ _ }, { call, put, all }) {
-    //   const [industryList, scaleList] = yield all([
-    //     yield call(listIndustry),
-    //     yield call(listInvestmentScale),
-    //   ]);
-    //   yield put({
-    //     type: 'save',
-    //     payload: { industryList, scaleList },
-    //   });
-    // },
-
-    // *getAreaDetail({ payload }, { call, put }) {
-    //   const response = yield call(getAreaDetail, payload);
-    //   yield put({
-    //     type: 'saveDetail',
-    //     payload: response,
-    //   });
-    // },
-
     *getList({ payload }, { call, put }) {
-      const { page = 1, pageSize, role, ...filter } = payload;
+      const { page = 1, pageSize, ...filter } = payload;
       const params = decreaseFormat(payload);
       const response = yield call(getList, params);
       // console.log(response);
@@ -104,13 +84,24 @@ export default {
     },
 
     *addTask({ payload }, { call, put, select }) {
-      const response = yield call(addTask, payload);
+      // 把字段parNode换成对应的parentNode
+      const payloadParse = JSON.parse(JSON.stringify(payload).replace(/parNode/g, 'parentNode'));
+      console.log(payloadParse);
+      const response = yield call(addTask, payloadParse);
       if (response) {
         yield put({
           type: 'refresh',
         });
       }
       return response;
+    },
+
+    *getTaskDetail({ payload }, { call, put }) {
+      const response = yield call(getTaskDetail, payload);
+      yield put({
+        type: 'saveDetail',
+        payload: response,
+      });
     },
 
     *editTask({ payload }, { call, put, select }) {
@@ -133,7 +124,8 @@ export default {
       return response;
     },
     *deleteTask({ payload }, { call, put, select }) {
-      const response = yield call(this.deleteTask, payload);
+      console.log('delete');
+      const response = yield call(deleteTask, payload);
       if (response) {
         yield put({
           type: 'refresh',
@@ -141,13 +133,13 @@ export default {
       }
       return response;
     },
-
   },
   reducers: {
     init() {
       return initialValue;
     },
     saveDetail(state, { payload }) {
+      console.log('saveDetail');
       return { ...state, selectDetail: payload };
     },
     // saveIndustryList(state, { payload }) {
