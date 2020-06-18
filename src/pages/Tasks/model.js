@@ -37,9 +37,9 @@ const initialValue = {
   filter: {
 
   },
-  selectDetail: {},
-  industryList: [],
-  scaleList: [],
+  // selectDetail: {},
+  // industryList: [],
+  // scaleList: [],
 };
 
 export default {
@@ -87,20 +87,20 @@ export default {
     },
 
     *refresh(_, { call, put, select }) {
-      let { areaCode, role, userId } = yield select(state => state.permission);
-      const { filter, page, pageSize } = yield select(state => state.project);
-      if (filter.areaCode) {
-        // eslint-disable-next-line prefer-destructuring
-        areaCode = filter.areaCode;
-      }
+      // let { areaCode, role, userId } = yield select(state => state.permission);
+      const { filter, page, pageSize } = yield select(state => state.task);
+      // if (filter.areaCode) {
+      //   // eslint-disable-next-line prefer-destructuring
+      //   areaCode = filter.areaCode;
+      // }
       yield put({
         type: 'getList',
-        payload: { ...filter, areaCode, role, userId },
+        payload: { ...filter },
       });
-      yield put({
-        type: 'getAreaDetail',
-        payload: { areaCode },
-      });
+      // yield put({
+      //   type: 'getAreaDetail',
+      //   payload: { areaCode },
+      // });
     },
 
     *addTask({ payload }, { call, put, select }) {
@@ -150,9 +150,9 @@ export default {
     saveDetail(state, { payload }) {
       return { ...state, selectDetail: payload };
     },
-    saveIndustryList(state, { payload }) {
-      return { ...state, industryList: payload };
-    },
+    // saveIndustryList(state, { payload }) {
+    //   return { ...state, industryList: payload };
+    // },
     save(state, { payload }) {
       return { ...state, ...payload };
     },

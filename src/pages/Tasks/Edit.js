@@ -37,7 +37,8 @@ const formItemLayout = {
 
 @Form.create()
 @connect(({ task }) => ({
-    industryList: task.industryList,
+    // industryList: task.industryList,
+    list: task.list,
 }))
 class TasksEdit extends React.Component {
     constructor(props) {
@@ -70,11 +71,6 @@ class TasksEdit extends React.Component {
     formatForm = () => {
         // const { getFieldsValue } = this.props;
         const data = this.props.location.query;
-        // data.industryCode += '';
-        // data.area = renderAreaArray(data.areaCode);
-        // data.dateTime0 = data.signingTime ? moment(data.signingTime) : null;
-        // data.dateTime1 =
-        //     data.startTime && data.endTime ? [moment(data.startTime), moment(data.endTime)] : [];
 
         // [1, 2, 3, 4].forEach(v => (data[`quarter${v}`] = ''));
         // (data.records || []).forEach(v => {
@@ -155,7 +151,7 @@ class TasksEdit extends React.Component {
                                                   },
                                                 ],
                                             })(
-                                                 <Select></Select>
+                                                 <Select></Select>,
                                             )}
                                         </Form.Item>
                                     )

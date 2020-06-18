@@ -2,18 +2,53 @@ import React from 'react';
 import { Cascader } from 'antd';
 
 const options = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    isLeaf: false,
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    isLeaf: false,
-  },
-];
-
+    {
+      value: 'category',
+      label: 'Category',
+      children: [
+        {
+          value: 'dataPhase',
+          label: '数据阶段',
+          children: [
+            {
+              value: '1',
+              label: '1',
+            },
+          ],
+        },
+        {
+            value: 'project',
+            label: '项目',
+            children: [
+                {
+                value: '2',
+                label: '2',
+                },
+            ],
+        },
+        {
+            value: 'dataType',
+            label: '数据类型',
+            children: [
+                {
+                value: '',
+                label: '',
+                },
+            ],
+        },
+        {
+            value: 'importance',
+            label: '重要度',
+            children: [
+                {
+                value: '',
+                label: '',
+                },
+            ],
+        },
+      ],
+    },
+  ];
 export default class LazyOptions extends React.Component {
   state = {
     options,
@@ -24,6 +59,7 @@ export default class LazyOptions extends React.Component {
   };
 
   loadData = selectedOptions => {
+    console.log('loadData');
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
 
@@ -40,11 +76,13 @@ export default class LazyOptions extends React.Component {
           value: 'dynamic2',
         },
       ];
+
       this.setState({
-        options: [...this.state.options],
-      });
+        // eslint-disable-next-line react/no-access-state-in-setstate
+      options: [...this.state.options],
+    });
     }, 1000);
-  };
+};
 
   render() {
     return (

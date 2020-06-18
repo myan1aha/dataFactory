@@ -209,6 +209,11 @@ class Tasks extends React.Component {
       task: { list = [], page = 1, pageSize = 10, total = 0, scaleList = [], selectDetail = {} },
     } = this.props;
     console.log(list);
+    // eslint-disable-next-line array-callback-return
+    list.forEach(item => {
+      // eslint-disable-next-line no-param-reassign
+      item.key = item.id;
+    })
     // const pageSize = 2;
     // const page = 1;
     if (!pageSizeOptions.includes(`${pageSize}`)) {
@@ -238,6 +243,7 @@ class Tasks extends React.Component {
               </Breadcrumb.Item>
             </Breadcrumb>
             <br></br>
+            {/* <Spin */}
             <Table
             className="compact-table"
             pagination={pagination}

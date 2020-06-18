@@ -1,15 +1,64 @@
 /* eslint-disable max-len */
 import React from 'react';
-import { Breadcrumb, Form, Input, Button } from 'antd';
+import { Breadcrumb, Form, Input, Button, Cascader } from 'antd';
 import { connect } from 'dva';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Link from 'umi/link';
 import options from './options'
 import InsertFrom from './InsertForm'
-// import LazyCascader from './LazyCascader'
+import LazyCascader from './LazyCascader'
 
 const { TextArea } = Input;
+
+const options2 = [
+    {
+      value: 'category',
+      label: 'Category',
+      children: [
+        {
+          value: 'dataPhase',
+          label: '数据阶段',
+          children: [
+            {
+              value: '1',
+              label: '1',
+            },
+          ],
+        },
+        {
+            value: 'project',
+            label: '项目',
+            children: [
+                {
+                value: '2',
+                label: '2',
+                },
+            ],
+        },
+        {
+            value: 'dataType',
+            label: '数据类型',
+            children: [
+                {
+                value: '',
+                label: '',
+                },
+            ],
+        },
+        {
+            value: 'importance',
+            label: '重要度',
+            children: [
+                {
+                value: '',
+                label: '',
+                },
+            ],
+        },
+      ],
+    },
+  ];
 
 const layout = {
     labelCol: {
@@ -53,7 +102,8 @@ function formatValues(values) {
 
 @Form.create()
 @connect(({ task }) => ({
-    industryList: task.industryList,
+    // industryList: task.industryList,
+    task,
 }))
 class TasksCreate extends React.Component {
     constructor(props) {
@@ -63,10 +113,11 @@ class TasksCreate extends React.Component {
     }
 
     onAdd = () => {
-        const { userId } = this.props;
+        console.log(this.props);
+        // const { userId } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
           if (err) return;
-          this.onAddTask({ ...formatValues(values), userId });
+          this.onAddTask({ ...formatValues(values) });
         });
     };
 
@@ -77,11 +128,13 @@ class TasksCreate extends React.Component {
             payload: values,
           })
           .then(res => {
-            if (res) {
-              this.closeModal();
-            }
+              console.log('success', res);
           });
     };
+
+    onChange = () => {
+        console.log('change');
+    }
 
     render() {
         const { getFieldDecorator, getFieldsValue } = this.props.form;
@@ -99,6 +152,12 @@ class TasksCreate extends React.Component {
                     </Breadcrumb.Item>
                 </Breadcrumb>
                 <br></br>
+                <Cascader className="cascader"
+                  options={options2}
+                  expandTrigger="hover"
+                  onChange={this.onChange}
+                />
+                <LazyCascader></LazyCascader>
                 <Form
                     {...layout}
                     name="basic"
@@ -138,8 +197,11 @@ class TasksCreate extends React.Component {
                                                 message: `请输入${item.label}`,
                                             },
                                             ],
-                                        })}
-                                           <InsertFrom label={item.label} required={!item.noneed} />
+                                        })(
+                                            <InsertFrom />,
+                                        )
+                                        }
+                                           
                                         </Form.Item>
                                     );
                                 default: return null;
