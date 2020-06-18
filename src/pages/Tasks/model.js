@@ -1,11 +1,4 @@
-import {
-  getList,
-  addTask,
-  editTask,
-  portTask,
-  deleteTask,
-  getTaskDetail,
-} from './service';
+import { getList, addTask, editTask, portTask, deleteTask, getTaskDetail } from './service';
 
 let PAGESIZE = 10;
 if (document.body.clientHeight - 300 > 0) {
@@ -45,7 +38,6 @@ const initialValue = {
     retryInterval: '',
     description: '',
   },
-
 };
 
 export default {
@@ -91,7 +83,9 @@ export default {
     },
 
     *addTask({ payload }, { call, put, select }) {
-      const response = yield call(addTask, payload);
+      // 把字段parNode换成对应的parentNode
+      const payloadParse = JSON.parse(JSON.stringify(payload).replace(/parNode/g, 'parentNode'));
+      const response = yield call(addTask, payloadParse);
       if (response) {
         yield put({
           type: 'refresh',
@@ -139,7 +133,6 @@ export default {
       }
       return response;
     },
-
   },
   reducers: {
     init() {

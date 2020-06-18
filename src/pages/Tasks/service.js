@@ -1,19 +1,29 @@
+/*
+ * @Author: your name
+ * @Date: 2020-06-18 22:18:16
+ * @LastEditTime: 2020-06-18 22:47:06
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /dataFactory/src/pages/Tasks/service.js
+ */
 import request from '@/utils/request';
 import { stringify } from 'qs';
 
 export async function getTaskDetail(params) {
-  const result = await request(
-    `/task/get/entity${params ? `?taskId=${params.id}` : ''}`,
-  );
+  const result = await request(`/task/get/entity${params ? `?taskId=${params.id}` : ''}`);
+  // console.log('getTaskDetail', result);
+  return result || {};
+}
+
+export async function getTableDetail(params) {
+  const result = await request(`/task/get/entity${params ? `?taskId=${params.id}` : ''}`);
   // console.log('getTaskDetail', result);
   return result || {};
 }
 
 export async function getList(params) {
   console.log('getList');
-  const result = await request(
-    '/node/list',
-  );
+  const result = await request('/node/list');
   // console.log(result);
   const list = [...result];
 

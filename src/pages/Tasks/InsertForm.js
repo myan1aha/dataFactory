@@ -1,10 +1,10 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable object-shorthand */
 import React from 'react';
-import { Button, Icon, Input, Cascader, Form, Alert } from 'antd';
+import { Button, Icon, Input, Cascader, Form } from 'antd';
 
 // import LazyCascader from './LazyCascader';
-
+import { getTableDetail } from './service';
 import styles from './index.less';
 
 // function arrayMove(array, from, to) {
@@ -15,50 +15,14 @@ import styles from './index.less';
 // }
 const options = [
   {
-    value: 'category',
-    label: 'Category',
-    children: [
-      {
-        value: 'dataPhase',
-        label: '数据阶段',
-        children: [
-          {
-            value: '1',
-            label: '1',
-          },
-        ],
-      },
-      {
-          value: 'project',
-          label: '项目',
-          children: [
-              {
-              value: '2',
-              label: '2',
-              },
-          ],
-      },
-      {
-          value: 'dataType',
-          label: '数据类型',
-          children: [
-              {
-              value: '',
-              label: '',
-              },
-          ],
-      },
-      {
-          value: 'importance',
-          label: '重要度',
-          children: [
-              {
-              value: '',
-              label: '',
-              },
-          ],
-      },
-    ],
+    value: 'Top Level1',
+    label: 'topLevel2',
+    isLeaf: false,
+  },
+  {
+    value: 'Top Level2',
+    label: 'topLevel2',
+    isLeaf: false,
   },
 ];
 
@@ -73,45 +37,64 @@ class DynamicFieldSet extends React.Component {
       list: [],
       options,
       alertStyle: {
-                    display: 'none',
-                  }
+        display: 'none',
+      },
     };
   }
 
-  loadData = selectedOptions => {
-    console.log('loadData');
-    const targetOption = selectedOptions[selectedOptions.length - 1];
+  loadData = async selectedOptions => {
+    console.log('loadData', selectedOptions);
+    const len = selectedOptions.length;
+    const targetOption = selectedOptions[-1];
     targetOption.loading = true;
 
+    console.log(targetOption.value);
 
-    // load options lazily
-    setTimeout(() => {
+    const response = await getTableDetail(targetOption.value);
+    response.then(res => {
       targetOption.loading = false;
-      targetOption.children = [
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: 'dynamic1',
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: 'dynamic2',
-        },
-      ];
-
+      targetOption.children = [];
+      res.forEach(item => {
+        targetOption.children.push({
+          label: item.value,
+          value: item.value,
+          isLeaf: len === 3,
+        });
+      });
       this.setState({
         // eslint-disable-next-line react/no-access-state-in-setstate
-      options: [...this.state.options],
+        options: [...this.state.options],
+      });
     });
-    }, 1000);
+    // load options lazily
+    // setTimeout(() => {
+    //   targetOption.loading = false;
+    //   targetOption.children = [
+    //     {
+    //       label: `${targetOption.label} Dynamic 1`,
+    //       value: 'dynamic1',
+    //       isLeaf: len === 3,
+    //     },
+    //     {
+    //       label: `${targetOption.label} Dynamic 2`,
+    //       value: 'dynamic2',
+    //       isLeaf: false,
+    //     },
+    //   ];
+
+    //   this.setState({
+    //     // eslint-disable-next-line react/no-access-state-in-setstate
+    //     options: [...this.state.options],
+    //   });
+    // }, 1000);
   };
 
   remove = (e, k) => {
     // console.log(e, k);
-    const list = this.state.list.filter(v => 
-      {
-        console.log(v,k);
-        return v !== k;
-      });
+    const list = this.state.list.filter(v => {
+      console.log(v, k);
+      return v !== k;
+    });
     console.log(list);
     const { required } = this.props;
     if (required && list.length < 1) {
@@ -122,7 +105,7 @@ class DynamicFieldSet extends React.Component {
     } else {
       this.setState({
         list: list,
-      })
+      });
     }
   };
 
@@ -134,13 +117,13 @@ class DynamicFieldSet extends React.Component {
     });
   };
 
-
   onChange = (e, item) => {
     // console.log(e, item);
     const { list } = this.state;
     const value = e.target ? e.target.value : e;
     // 判断重复
-    const isExist = list.length > 1 ? list.some(v => (value.join() === (v.value.join() || v.value))) : false;
+    const isExist =
+      list.length > 1 ? list.some(v => value.join() === (v.value.join() || v.value)) : false;
     console.log(isExist);
     if (!isExist) {
       // console.log("没有重复");
@@ -149,10 +132,10 @@ class DynamicFieldSet extends React.Component {
       const { onChange } = this.props;
       // eslint-disable-next-line no-unused-expressions
       onChange && onChange(this.state.list.map(v => v.value));
-    }else{
-      alert('重复表')
+    } else {
+      alert('重复表');
     }
-  }
+  };
 
   render() {
     const { list = [], alertStyle } = this.state;
@@ -161,33 +144,38 @@ class DynamicFieldSet extends React.Component {
     // console.log(label, name);
     return (
       <React.Fragment>
-          {list.map((v, index) =>
-           (
-             // eslint-disable-next-line react/no-array-index-key
-             <Form.Item key={`item-${index}`}>
-              <div className={styles.inputWrapper} >
-              { name === 'command' ? <Input value={v.value} onChange={e => this.onChange(e, v)}/>
+        {list.map((v, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Form.Item key={`item-${index}`}>
+            <div className={styles.inputWrapper}>
+              {name === 'command' ? (
+                <Input value={v.value} onChange={e => this.onChange(e, v)} />
+              ) : (
                 // : <Select>
                 //   <Select.Option value="a">ddd</Select.Option>
                 // </Select>
-                : <Cascader
-                    options={this.state.options}
-                    loadData={this.loadData}
-                    onChange={e => this.onChange(e, v)}
-                    value={v.value}
-                  />
-              }
-                <Icon
-                  theme="filled"
-                  className="dynamic-delete-button"
-                  type="minus-circle"
-                  onClick={e => this.remove(e, v)}
+                <Cascader
+                  options={this.state.options}
+                  loadData={this.loadData}
+                  onChange={e => this.onChange(e, v)}
+                  value={v.value}
+                  // changeOnSelect
                 />
-                  <div className="tableNumber">{label}{index + 1}</div>
-                  {/* <Alert message="Success Text" style={alertStyle} type="success" /> */}
+              )}
+              <Icon
+                theme="filled"
+                className="dynamic-delete-button"
+                type="minus-circle"
+                onClick={e => this.remove(e, v)}
+              />
+              <div className="tableNumber">
+                {label}
+                {index + 1}
               </div>
-              </Form.Item>
-           ))}
+              {/* <Alert message="Success Text" style={alertStyle} type="success" /> */}
+            </div>
+          </Form.Item>
+        ))}
         <div style={{ marginTop: '-10px' }}>
           <Button style={{ width: '30%' }} type="primary" onClick={this.add}>
             新增{label}

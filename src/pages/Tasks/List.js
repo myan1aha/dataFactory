@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Breadcrumb, Popconfirm, message, Spin } from 'antd';
+import { Table, Breadcrumb, Popconfirm, message, Spin, Modal } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 // import './index.less'
@@ -25,6 +25,11 @@ const listStyle = {
 class Tasks extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      ModalText: 'Content of the modal',
+      visible: false,
+      confirmLoading: false,
+    }
     this.columns = [
       {
         title: '任务id',
@@ -71,7 +76,11 @@ class Tasks extends React.Component {
         dataIndex: 'option',
         // key: 'option',
         width: '15%',
-        render: (_, records) => (
+        render: (_, records) => {
+
+        
+        
+        return (
             <ul style={{ display: 'inline' }}>
                 <li style={listStyle}>
                       <Link to={
@@ -91,13 +100,54 @@ class Tasks extends React.Component {
                 </Popconfirm>
                 </li>
                 <li style={listStyle}>
-                      <a onClick={ this.uploadPro } style={{ whiteSpace: 'nowrap' }}>上传项目</a>
+                      {/* <a onClick={ this.uploadPro } style={{ whiteSpace: 'nowrap' }}>上传项目</a> */}
+                      <div>
+                        <Button type="primary" onClick={this.showModal}>
+                          Open Modal with async logic
+                        </Button>
+                        <Modal
+                          title="Title"
+                          visible={visible}
+                          onOk={this.handleOk}
+                          confirmLoading={confirmLoading}
+                          onCancel={this.handleCancel}
+                        >
+                          <p>{ModalText}</p>
+                        </Modal>
+                      </div>
                 </li>
             </ul>
         ),
+        }
       },
     ];
   }
+
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleOk = () => {
+    this.setState({
+      ModalText: 'The modal will be closed after two seconds',
+      confirmLoading: true,
+    });
+    setTimeout(() => {
+      this.setState({
+        visible: false,
+        confirmLoading: false,
+      });
+    }, 2000);
+  };
+
+  handleCancel = () => {
+    console.log('Clicked cancel button');
+    this.setState({
+      visible: false,
+    });
+  };
 
   componentDidMount() {
     // const { role, areaCode, userId } = this.props.permission;
@@ -177,6 +227,8 @@ class Tasks extends React.Component {
     const {
       task: { list = [], page = 1, pageSize = 10, total = 0, scaleList = [], selectDetail = {} },
     } = this.props;
+    const { visible, confirmLoading, ModalText } = this.state;
+
 
     // eslint-disable-next-line array-callback-return
     list.forEach(item => {
