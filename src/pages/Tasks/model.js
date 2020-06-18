@@ -1,13 +1,10 @@
 import {
   getList,
-  // listInvestmentScale,
   addTask,
   editTask,
-  // getAreaDetail,
-  // listIndustry,
   portTask,
-  // deleteTask,
-  // exportTask,
+  deleteTask,
+  getTaskDetail,
 } from './service';
 
 let PAGESIZE = 10;
@@ -34,39 +31,29 @@ const initialValue = {
   page: 1,
   pageSize: PAGESIZE,
   total: 0,
+  selectDetail: {},
+  scaleList: [],
   filter: {
-
+    proName: '',
+    taskName: '',
+    dataInputs: [],
+    dataOutputs: [],
+    taskDependencies: '',
+    parentNode: '',
+    command: [],
+    numRetry: '',
+    retryInterval: '',
+    description: '',
   },
-  // selectDetail: {},
-  // industryList: [],
-  // scaleList: [],
+
 };
 
 export default {
   namespace: 'task',
   state: initialValue,
   effects: {
-    // *listIndustry({ _ }, { call, put, all }) {
-    //   const [industryList, scaleList] = yield all([
-    //     yield call(listIndustry),
-    //     yield call(listInvestmentScale),
-    //   ]);
-    //   yield put({
-    //     type: 'save',
-    //     payload: { industryList, scaleList },
-    //   });
-    // },
-
-    // *getAreaDetail({ payload }, { call, put }) {
-    //   const response = yield call(getAreaDetail, payload);
-    //   yield put({
-    //     type: 'saveDetail',
-    //     payload: response,
-    //   });
-    // },
-
     *getList({ payload }, { call, put }) {
-      const { page = 1, pageSize, role, ...filter } = payload;
+      const { page = 1, pageSize, ...filter } = payload;
       const params = decreaseFormat(payload);
       const response = yield call(getList, params);
       // console.log(response);
@@ -113,6 +100,16 @@ export default {
       return response;
     },
 
+    *getTaskDetail({ payload }, { call, put }) {
+      const response = yield call(getTaskDetail, payload);
+      // console.log('gettttt', response);
+      const resParse = JSON.parse(JSON.stringify(response).replace(/parentNode/g, 'parNode'));
+      yield put({
+        type: 'saveDetail',
+        payload: resParse,
+      });
+    },
+
     *editTask({ payload }, { call, put, select }) {
       const response = yield call(editTask, payload);
       if (response) {
@@ -133,7 +130,8 @@ export default {
       return response;
     },
     *deleteTask({ payload }, { call, put, select }) {
-      const response = yield call(this.deleteTask, payload);
+      console.log('delete');
+      const response = yield call(deleteTask, payload);
       if (response) {
         yield put({
           type: 'refresh',
@@ -148,6 +146,7 @@ export default {
       return initialValue;
     },
     saveDetail(state, { payload }) {
+      console.log('saveDetail');
       return { ...state, selectDetail: payload };
     },
     // saveIndustryList(state, { payload }) {

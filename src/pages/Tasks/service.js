@@ -1,20 +1,20 @@
 import request from '@/utils/request';
 import { stringify } from 'qs';
 
-export async function getAreaDetail(params) {
+export async function getTaskDetail(params) {
   const result = await request(
-    `/api/project/getAreaDetail${params ? `?${stringify(params)}` : ''}`,
+    `/task/get/entity${params ? `?taskId=${params.id}` : ''}`,
   );
+  // console.log('getTaskDetail', result);
   return result || {};
 }
 
 export async function getList(params) {
   console.log('getList');
   const result = await request(
-    // `/node/list${params ? `?${stringify(params)}` : ''}`,
     '/node/list',
   );
-  console.log(result);
+  // console.log(result);
   const list = [...result];
 
   return { list };
@@ -55,6 +55,7 @@ export async function portTask(params) {
 }
 
 export async function deleteTask(params) {
+  console.log('dddddelete');
   const result = await request('/node/delete', {
     method: 'POST',
     data: params,

@@ -1,61 +1,30 @@
 import React from 'react';
-import { Table, Breadcrumb, Popconfirm, message } from 'antd';
+import { Table, Breadcrumb, Popconfirm, message, Spin } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 // import './index.less'
 // import Task from './tasks'
+// import Filter from './Filter'
 
 function cancel(e) {
   console.log(e);
   message.error('Click on No');
 }
 
-let pageSizeOptions = ['10', '20', '30'];
+let pageSizeOptions = ['1', '2', '3'];
 
-const dataSource = [
-    {
-      key: 1,
-      id: 11111,
-      taskName: '任务1',
-      name_en: 'task1',
-      type: 'type1',
-      inCharge: 'aaa',
-      status: '75%',
-    },
-    {
-        key: 2,
-        id: 22222,
-        taskName: '任务2',
-        name_en: 'task2',
-        type: 'type2',
-        inCharge: 'bbb',
-        status: '50%',
-    },
-    {
-        key: 3,
-        id: 22222,
-        taskName: '任务3',
-        name_en: 'task3',
-        type: 'type3',
-        inCharge: 'ccc',
-        status: '60%',
-    },
-  ];
 const listStyle = {
   width: '20%', cursor: 'pointer', float: 'left', fontSize: 13, padding: 0,
 }
 
-@connect(({ task }) => ({
-  list: task.list,
+@connect(({ task, loading }) => ({
+  // list: task.list,
   task,
+  loadingTask: loading.models.task,
 }))
 class Tasks extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      // eslint-disable-next-line react/no-unused-state
-      li: {},
-    }
     this.columns = [
       {
         title: '任务id',
@@ -77,7 +46,7 @@ class Tasks extends React.Component {
       },
       {
         title: '上游节点',
-        dataIndex: 'parentNode',
+        dataIndex: 'parNode',
         // key: 'type',
         width: '10%',
       },
@@ -152,6 +121,7 @@ class Tasks extends React.Component {
   deleteTask = (e, projectName, taskName) => {
     e.preventDefault();
     e.stopPropagation();
+    // console.log(projectName, taskName);
     this.props.dispatch({
       type: 'task/deleteTask',
       payload: {
@@ -177,7 +147,7 @@ class Tasks extends React.Component {
   };
 
   handleTableChange = (pagination, _, sorter) => {
-    const pageSize = 2;
+    const { pageSize = 2 } = this.props.task;
     const { order, field } = sorter;
     const filter = {
       sortOrder: 'desc',
@@ -195,7 +165,6 @@ class Tasks extends React.Component {
       });
     } else {
       const page = pagination.current;
-      console.log(this);
       this.onListChange({
         page,
         ...filter,
@@ -204,25 +173,26 @@ class Tasks extends React.Component {
   };
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     const {
       task: { list = [], page = 1, pageSize = 10, total = 0, scaleList = [], selectDetail = {} },
     } = this.props;
-    console.log(list);
+
     // eslint-disable-next-line array-callback-return
     list.forEach(item => {
       // eslint-disable-next-line no-param-reassign
       item.key = item.id;
     })
-    // const pageSize = 2;
-    // const page = 1;
+    // 将拿到的数据中字段名“parentNode”修改成“parNode”
+    const listParse = JSON.parse(JSON.stringify(list).replace(/parentNode/g, 'parNode'));
+
     if (!pageSizeOptions.includes(`${pageSize}`)) {
       pageSizeOptions.push(`${pageSize}`);
       pageSizeOptions = pageSizeOptions.sort((a, b) => a - b);
     }
     const pagination = {
       current: page,
-      total: 0,
+      total,
       pageSize,
       size: 'small',
       showSizeChanger: true,
@@ -244,14 +214,21 @@ class Tasks extends React.Component {
             </Breadcrumb>
             <br></br>
             {/* <Spin */}
-            <Table
-            className="compact-table"
-            pagination={pagination}
-            dataSource={list}
-            columns={this.columns}
-            onChange={this.handleTableChange}
-            bordered
-            />
+            <Spin spinning={this.props.loadingTask}>
+              {/* <Filter
+                onChange={this.onFilterChange}
+                scaleList={scaleList}
+                selectDetail={selectDetail}
+              /> */}
+              <Table
+                className="compact-table"
+                pagination={pagination}
+                dataSource={listParse}
+                columns={this.columns}
+                onChange={this.handleTableChange}
+                bordered
+              />
+            </Spin >
             {/* <Pagination/> */}
         </div>
     )

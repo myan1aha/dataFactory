@@ -1,12 +1,10 @@
 import React from 'react';
-import { Breadcrumb, Form, Input, Button, Select } from 'antd';
+import { Breadcrumb, Form, Input, Button, Spin } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 
 import options from './options'
 import InsertForm from './InsertForm'
-// import Multi from './MuInput';
-import OrderInput from './OrderInput'
 
 const { TextArea } = Input;
 const layout = {
@@ -36,9 +34,10 @@ const formItemLayout = {
 
 
 @Form.create()
-@connect(({ task }) => ({
+@connect(({ task, loading }) => ({
     // industryList: task.industryList,
-    list: task.list,
+    task,
+    loadingTask: loading.models.task,
 }))
 class TasksEdit extends React.Component {
     constructor(props) {
@@ -49,6 +48,7 @@ class TasksEdit extends React.Component {
         }
     }
 
+    // eslint-disable-next-line react/sort-comp
     onAdd = () => {
         console.log('add');
     }
@@ -68,27 +68,37 @@ class TasksEdit extends React.Component {
         }
       };
 
-    formatForm = () => {
-        // const { getFieldsValue } = this.props;
-        const data = this.props.location.query;
-
-        // [1, 2, 3, 4].forEach(v => (data[`quarter${v}`] = ''));
-        // (data.records || []).forEach(v => {
-        //     data[`quarter${v.quarter}`] = v.investment;
-        // });
-        data.proName = 'pro';
-        this.props.form.setFieldsValue({
-            taskName: data.name,
-            // type: data.type,
-            proName: data.proName,
+    componentDidMount() {
+        // const { role, areaCode, userId } = this.props.permission;
+        this.props.dispatch({
+          type: 'task/getTaskDetail',
+          payload: {
+            id: this.props.location.query.id,
+          },
         });
-    };
+        // const data = this.props.task.selectDetail;
+        // // console.log(data);
+        // this.props.form.setFieldsValue(data, () => {
+        //     // console.log('success form');
+        // });
+        // console.log(data);
+        const data = this.props.task.selectDetail;
+        if (data) {
+            // console.log(data);
+            this.props.form.setFieldsValue(data, () => {
+                console.log(data);
+                    console.log('success form');
+            });
+        }
+      }
 
     render() {
-        console.log(this.props);
-        const { getFieldDecorator, getFieldsValue } = this.props.form;
+        // console.log(this.props);
+        const { getFieldDecorator } = this.props.form;
         // console.log('fields', getFieldsValue());
-        const data = this.props.location.query;
+        const data = this.props.task.selectDetail;
+        // console.log(data);
+        // console.log(this.props);
         return (
             <div>
                 <Breadcrumb >
@@ -103,6 +113,7 @@ class TasksEdit extends React.Component {
                     </Breadcrumb.Item>
                 </Breadcrumb>
                 <br></br>
+                <Spin spinning={this.props.loadingTask}>
                 <Form
                     {...layout}
                     name="basic"
@@ -128,33 +139,13 @@ class TasksEdit extends React.Component {
                                                   },
                                                 ],
                                                 // eslint-disable-next-line max-len
-                                                initialValue: data[item.name] ? data[item.name] : null,
+                                                // initialValue: data[item.name] ? data[item.name] : null,
                                             })(
                                                  item.type === 'input' ? <Input placeholder={`请输入${item.label}`}/>
                                                                         : <TextArea></TextArea>,
                                             )}
                                         </Form.Item>
                                     );
-                                case 'select':
-                                    return (
-                                        <Form.Item
-                                            label={`${item.label}`}
-                                            name={`${item.name}`}
-                                            key={item.key}
-                                            {...formItemLayout}
-                                        >
-                                            {getFieldDecorator(item.name, {
-                                                rules: [
-                                                  {
-                                                    required: true,
-                                                    message: `请输入${item.label}`,
-                                                  },
-                                                ],
-                                            })(
-                                                 <Select></Select>,
-                                            )}
-                                        </Form.Item>
-                                    )
                                 case 'insertForm':
                                     // console.log(item.label);
                                     return (
@@ -163,13 +154,13 @@ class TasksEdit extends React.Component {
                                         {getFieldDecorator(item.name, {
                                             rules: [
                                             {
-                                                required: true,
+                                                required: false,
                                                 message: `请输入${item.label}`,
                                             },
                                             ],
                                         })(
                                             // eslint-disable-next-line max-len
-                                            <InsertForm label={item.label} required={!item.noneed} name={item.name}/>,
+                                            <InsertForm action="edit" label={item.label} name={item.name}/>,
                                         )}
                                         </Form.Item>
                                     );
@@ -182,6 +173,7 @@ class TasksEdit extends React.Component {
                         <Button type="dashed" style={{ marginLeft: '10px' }} onClick={this.onCancel}>取消</Button>
                     </Form.Item>
                 </Form>
+                </Spin>
             </div>
 
         )

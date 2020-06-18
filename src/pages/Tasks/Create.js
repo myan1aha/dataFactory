@@ -7,58 +7,9 @@ import { connect } from 'dva';
 import Link from 'umi/link';
 import options from './options'
 import InsertFrom from './InsertForm'
-import LazyCascader from './LazyCascader'
+
 
 const { TextArea } = Input;
-
-const options2 = [
-    {
-      value: 'category',
-      label: 'Category',
-      children: [
-        {
-          value: 'dataPhase',
-          label: '数据阶段',
-          children: [
-            {
-              value: '1',
-              label: '1',
-            },
-          ],
-        },
-        {
-            value: 'project',
-            label: '项目',
-            children: [
-                {
-                value: '2',
-                label: '2',
-                },
-            ],
-        },
-        {
-            value: 'dataType',
-            label: '数据类型',
-            children: [
-                {
-                value: '',
-                label: '',
-                },
-            ],
-        },
-        {
-            value: 'importance',
-            label: '重要度',
-            children: [
-                {
-                value: '',
-                label: '',
-                },
-            ],
-        },
-      ],
-    },
-  ];
 
 const layout = {
     labelCol: {
@@ -122,6 +73,7 @@ class TasksCreate extends React.Component {
     };
 
     onAddTask = values => {
+        console.log(values);
         this.props
           .dispatch({
             type: 'task/addTask',
@@ -152,12 +104,6 @@ class TasksCreate extends React.Component {
                     </Breadcrumb.Item>
                 </Breadcrumb>
                 <br></br>
-                <Cascader className="cascader"
-                  options={options2}
-                  expandTrigger="hover"
-                  onChange={this.onChange}
-                />
-                <LazyCascader></LazyCascader>
                 <Form
                     {...layout}
                     name="basic"
@@ -193,12 +139,12 @@ class TasksCreate extends React.Component {
                                         {getFieldDecorator(item.name, {
                                             rules: [
                                             {
-                                                required: true,
+                                                required: false,
                                                 message: `请输入${item.label}`,
                                             },
                                             ],
                                         })(
-                                            <InsertFrom />,
+                                            <InsertFrom label={item.label} required="false" name={item.name}/>,
                                         )
                                         }
                                            

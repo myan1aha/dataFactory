@@ -108,5 +108,9 @@ export default {
       target: 'http://192.168.1.34:8095',
       changeOrigin: true,
     },
+    '/task': {
+      target: 'http://192.168.1.34:8095',
+      changeOrigin: true,
+    }
   },
 };
