@@ -16,7 +16,7 @@ export async function getTaskDetail(params) {
 }
 
 export async function getTableDetail(params) {
-  const result = await request(`/task/get/entity${params ? `?taskId=${params.id}` : ''}`);
+  const result = await request('');
   // console.log('getTaskDetail', result);
   return result || {};
 }
@@ -24,6 +24,15 @@ export async function getTableDetail(params) {
 export async function getList(params) {
   console.log('getList');
   const result = await request('/node/list');
+  // console.log(result);
+  const list = [...result];
+
+  return { list };
+}
+
+export async function getUploadConfirm() {
+  console.log('getUploadConfirm');
+  const result = await request('');
   // console.log(result);
   const list = [...result];
 
@@ -56,7 +65,7 @@ export async function editTask(params) {
   return result;
 }
 
-export async function portTask(params) {
+export async function postPro(params) {
   const result = await request('/node/update', {
     method: 'POST',
     data: params,

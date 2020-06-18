@@ -66,27 +66,6 @@ class DynamicFieldSet extends React.Component {
         options: [...this.state.options],
       });
     });
-    // load options lazily
-    // setTimeout(() => {
-    //   targetOption.loading = false;
-    //   targetOption.children = [
-    //     {
-    //       label: `${targetOption.label} Dynamic 1`,
-    //       value: 'dynamic1',
-    //       isLeaf: len === 3,
-    //     },
-    //     {
-    //       label: `${targetOption.label} Dynamic 2`,
-    //       value: 'dynamic2',
-    //       isLeaf: false,
-    //     },
-    //   ];
-
-    //   this.setState({
-    //     // eslint-disable-next-line react/no-access-state-in-setstate
-    //     options: [...this.state.options],
-    //   });
-    // }, 1000);
   };
 
   remove = (e, k) => {
