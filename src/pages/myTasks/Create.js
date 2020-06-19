@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react';
-import { Breadcrumb, Form, Input, Button, Cascader } from 'antd';
+import { Breadcrumb, Form, Input, Button } from 'antd';
 import { connect } from 'dva';
 // eslint-disable-next-line import/no-extraneous-dependencies
 // import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -13,10 +13,10 @@ const { TextArea } = Input;
 
 const layout = {
     labelCol: {
-        span: 4,
+        span: 8,
     },
     wrapperCol: {
-        span: 8,
+        span: 16,
     },
 };
 const tailLayout = {
@@ -28,24 +28,12 @@ const tailLayout = {
 const formItemLayout = {
     labelCol: {
         xs: { span: 4 },
-        sm: { span: 4 },
     },
     wrapperCol: {
-        xs: { span: 8 },
-        sm: { span: 8 },
+        xs: { span: 14 },
     },
 };
 
-// const formItemLayout = {
-//     labelCol: {
-//         xs: { span: 24 },
-//         sm: { span: 4 },
-//     },
-//     wrapperCol: {
-//         xs: { span: 24 },
-//         sm: { span: 20 },
-//     },
-// };
 function formatValues(values) {
     let params = { ...values };
     params = JSON.parse(JSON.stringify(params).replace(/parNode/g, 'parentNode'));
@@ -99,7 +87,7 @@ class TasksCreate extends React.Component {
     }
 
     render() {
-        const { getFieldDecorator, getFieldsValue } = this.props.form;
+        const { getFieldDecorator } = this.props.form;
         return (
             <div>
                 <Breadcrumb >
@@ -107,7 +95,7 @@ class TasksCreate extends React.Component {
                         <Link to="/">Home</Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <Link to="/tasks">Tasks Application</Link>
+                        <Link to="/myTasks">Tasks Application</Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
                         Tasks Creation
@@ -135,6 +123,7 @@ class TasksCreate extends React.Component {
                                                     {
                                                         required: true,
                                                         message: `请输入${item.label}`,
+                                                        // type: item.dataType,
                                                     },
                                                     ],
                                                 })(
@@ -150,15 +139,14 @@ class TasksCreate extends React.Component {
                                             {getFieldDecorator(item.name, {
                                                 rules: [
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message: `请输入${item.label}`,
                                                 },
                                                 ],
                                             })(
                                                 <InsertFrom action="create" label={item.label} required="true" name={item.name}/>,
                                             )
-                                            }
-                                            
+                                            }                                         
                                             </Form.Item>
                                         );
                                     default: return null;

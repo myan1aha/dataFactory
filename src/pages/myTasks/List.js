@@ -4,14 +4,12 @@ import { Table, Breadcrumb, Popconfirm, message, Spin, Modal, Button, Icon } fro
 import Link from 'umi/link';
 import { connect } from 'dva';
 import { getProJson } from './service';
+
+import UploadProject from './components/UploadProject/';
+
 // import './index.less'
 // import Task from './tasks'
 // import Filter from './Filter'
-
-function cancel(e) {
-  console.log(e);
-  message.error('Click on No');
-}
 
 let pageSizeOptions = ['1', '2', '3'];
 
@@ -46,7 +44,7 @@ class Tasks extends React.Component {
         //   key: 'id',
         width: '15%',
         sorter: {
-          compare: (a, b) => (a.id > b.id),
+          compare: (a, b) => a.id > b.id,
         },
       },
       {
@@ -66,7 +64,6 @@ class Tasks extends React.Component {
         dataIndex: 'parNode',
         // key: 'type',
         width: '10%',
-
       },
       {
         title: '负责人',
@@ -95,7 +92,12 @@ class Tasks extends React.Component {
             <ul style={{ display: 'inline' }}>
               <li style={listStyle}>
                 <Link
-                  to={{ pathname: '/myTasks/edit', query: { id: records.id } }}
+                  to={{ pathname: '/myTasks/edit',
+                        query: {
+                          taskName: records.taskName,
+                          projectName: records.projectName,
+                        },
+                      }}
                   onClick={this.editRow}
                 >
                   <Icon type="edit" />
@@ -105,49 +107,20 @@ class Tasks extends React.Component {
                 <Popconfirm
                   title="Are you sure delete this task?"
                   onConfirm={e => this.deleteTask(e, records.projectName, records.taskName)}
-                  onCancel={cancel}
                   okText="Yes"
                   cancelText="No"
                 >
-                  <Icon type="delete" style={{ color: 'darkred' }}/>
+                  <Icon type="delete" style={{ color: 'darkred' }} />
                 </Popconfirm>
               </li>
               <li style={listStyle}>
-                {/* <a onClick={ this.uploadPro } style={{ whiteSpace: 'nowrap' }}>上传项目</a> */}
-                <div>
-                  <Icon type="upload" onClick={() => this.clickModal(records.projectName)}/>
-                  <Modal
-                    title={title}
-                    visible={visible}
-                    onOk={() => this.handleOk(records)}
-                    confirmLoading={confirmLoading}
-                    onCancel={this.handleCancel}
-                    okText="确认上传"
-                  >
-                    <Table showHeader={isShowHeader} bordered pagination={isPage} columns={this.proColumns} dataSource={dataSource} />
-                  </Modal>
-                </div>
+                <Icon type="upload" onClick={() => this.showModal(records.projectName)} />
               </li>
             </ul>
           );
         },
       },
     ];
-    this.proColumns = [
-      {
-        title: 'name',
-        dataIndex: 'name',
-        //   key: 'id',
-        width: '30%',
-      },
-      {
-        title: '查看来源图',
-        dataIndex: 'origin',
-        //   key: 'id',
-        width: '30%',
-        render: () => <Button>查看来源图</Button>
-      },
-    ]
   }
 
   componentDidMount() {
@@ -172,63 +145,34 @@ class Tasks extends React.Component {
 
   originPic = () => {
     console.log('origin picture');
-  }
+  };
 
-  showModal = proName => {
+  showModal = projectName => {
     this.setState({
       visible: true,
-      title: `项目名称 : ${proName}`,
+      title: `项目名称 : ${projectName}`,
+      modalId: projectName,
     });
   };
 
-  clickModal = async proName => {
-    this.showModal(proName);
-    const res = await getProJson(proName);
-    if (res) {
-      const col = [];
-      res.forEach((item, index) => {
-        col.push({
-          name: item.flow,
-          key: `item-${index}`,
-        });
-      })
-      this.setState({
-        dataSource: col,
-      })
-    }
-  }
-
-  handleOk = values => {
+  handleOk = projectName => {
     // 上传项目
-    this.setState({
-      confirmLoading: true,
-    });
-    setTimeout(() => {
-      this.setState({
-        visible: false,
-        confirmLoading: false,
+    this.props
+      .dispatch({
+        type: 'task/portTask',
+        payload: {
+          projectName,
+        },
+      })
+      .then(res => {
+        if (res) {
+          message.success('上传成功');
+          this.handleCancel();
+        }
       });
-      message.success('success!');
-    }, 2000);
-    const params = { ...values };
-    params.parentNode = params.parentNode;
-    delete params.parNode;
-    console.log(params);
-    // this.props
-    //   .dispatch({
-    //     type: 'task/portTask',
-    //     payload: params,
-    //   })
-    //   .then(() => {
-    //     this.setState({
-    //       visible: false,
-    //       confirmLoading: false,
-    //     });
-    //   });
   };
 
   handleCancel = () => {
-    console.log('Clicked cancel button');
     this.setState({
       visible: false,
     });
@@ -322,7 +266,7 @@ class Tasks extends React.Component {
             <Link to="/">Home</Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>
-            <Link to="/tasks">Tasks Application</Link>
+            <Link to="/myTasks">Tasks Application</Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Tasks List</Breadcrumb.Item>
         </Breadcrumb>
@@ -343,6 +287,21 @@ class Tasks extends React.Component {
             // bordered
           />
         </Spin>
+        <Modal
+          title={this.state.title}
+          width={'70%'}
+          onCancel={this.handleCancel}
+          destroyOnClose={true}
+          visible={this.state.visible}
+          footer={null}
+          wrapClassName="scroll-modal no-padding"
+        >
+          <UploadProject
+            loading={this.props.loadingTask}
+            modalId={this.state.modalId}
+            onUpload={this.handleOk}
+          />
+        </Modal>
         {/* <Pagination/> */}
       </div>
     );

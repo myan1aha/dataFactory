@@ -10,9 +10,9 @@ import request from '@/utils/request';
 import { stringify } from 'qs';
 
 export async function getTaskDetail(params) {
-  const result = await request(`/task/get/entity${params ? `?taskId=${params.id}` : ''}`);
+  const result = await request(`/node${params ? `?${stringify(params)}` : ''}`);
   // console.log('getTaskDetail', result);
-  return result || {};
+  return result;
 }
 
 export async function getTableDetail(params) {
@@ -40,7 +40,7 @@ export async function getList() {
 }
 
 export async function getProJson(params) {
-  console.log('getProJson',params);
+  console.log('getProJson', params);
   // const result = await request(`/node/projectjson${params ? `?projectName=${params}` : ''}`);
   const result = await request(`/node/projectjson${params ? `?projectName=test4` : ''}`);
   console.log(result);
@@ -72,8 +72,14 @@ export async function postPro(params) {
   const result = await request('/node/update', {
     method: 'POST',
     data: params,
-    headers: { 'Access-Control-Allow-Origin': 'http://localhost:8000', 'access-control-allow-credentials': 'true' },
+  });
+  return result;
+}
 
+export async function portTask(params) {
+  const result = await request('/node/upload', {
+    method: 'POST',
+    data: params,
   });
   return result;
 }
@@ -83,7 +89,6 @@ export async function deleteTask(params) {
   const result = await request('/node/delete', {
     method: 'POST',
     data: params,
-    headers: { 'Access-Control-Allow-Origin': 'http://localhost:8000', 'access-control-allow-credentials': 'true' },
   });
   return result;
 }

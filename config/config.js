@@ -64,9 +64,10 @@ export default {
     'tooltip-bg': 'rgba(20, 28, 57, 0.8)',
     // Tooltip arrow color
     'tooltip-arrow-color': 'rgba(20, 28, 57, 0.8)',
+    'layout-header-height' : '50px',
   },
   define: {
-    'process.env.API_HOST': process.env.API_HOST || 'http://47.96.126.125:8097',
+    'process.env.API_HOST': process.env.API_HOST || 'http://192.168.1.34:8095',
     'process.env.AUTH': process.env.AUTH || 0,
   },
   ignoreMomentLocale: true,
@@ -111,10 +112,6 @@ export default {
     '/meta': {
       target: 'http://192.168.1.34:8095',
       changeOrigin: true,
-    },
-    '/task': {
-      target: 'http://192.168.1.34:8095',
-      changeOrigin: true,
-    },
+    }
   },
 };

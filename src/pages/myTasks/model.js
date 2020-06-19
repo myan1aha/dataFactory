@@ -102,6 +102,7 @@ export default {
         type: 'saveDetail',
         payload: response,
       });
+      return response;
     },
 
     *editTask({ payload }, { call, put, select }) {

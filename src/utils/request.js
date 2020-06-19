@@ -67,6 +67,9 @@ request.interceptors.request.use((url, options) => {
   if (process.env.NODE_ENV === 'production') {
     newUrl = process.env.API_HOST + url;
   }
+  // else{
+    // newUrl = 'http://192.168.1.34:8095' + url;
+  // }
 
   const newOptions = { ...options };
   if (process.env.AUTH) {

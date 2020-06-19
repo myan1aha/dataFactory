@@ -65,18 +65,16 @@ class DynamicFieldSet extends React.Component {
 
     static getDerivedStateFromProps(nextProps, state) {
         const { value, required } = nextProps;
-        console.log(value)
+        // console.log(value)
         if (value && value !== state.value) {
           return {
             value,
             list: value.length > 0 ? value.map(v => ({ value: v })) : required ? [{ value: '' }] : [],
           };
         }
-      
      return null;
-
     }
-    
+
   loadData = async selectedOptions => {
     console.log('loadData', selectedOptions);
     const len = selectedOptions.length;
@@ -84,41 +82,24 @@ class DynamicFieldSet extends React.Component {
     targetOption.loading = true;
 
     // console.log(targetOption.value);
-    let res;
-    if (len === 1) {
-      res = await getTableDetail(targetOption.value);
-      if (res) {
-        targetOption.loading = false;
-        targetOption.children = [];
-        res.forEach(item => {
-          targetOption.children.push({
-            label: item.name,
-            value: item.id,
-            isLeaf: len === 4,
-          });
+    const params = len === 1 ? targetOption.value : targetOption.id;
+    const res = await getTableDetail(params);
+    if (res) {
+      console.log(res);
+      targetOption.loading = false;
+      targetOption.children = [];
+      res.forEach(item => {
+        targetOption.children.push({
+          label: item.name,
+          value: item.name,
+          id: item.id,
+          isLeaf: len === 3,
         });
-        this.setState({
-          // eslint-disable-next-line react/no-access-state-in-setstate
-          options: [...this.state.options],
-        });
-      }
-    } else {
-      res = await getEntityDetail(targetOption.value)
-      if (res) {
-        targetOption.loading = false;
-        targetOption.children = [];
-        res.collection.forEach(item => {
-          targetOption.children.push({
-            label: item.name || '',
-            value: item.id || '',
-            isLeaf: len === 3,
-          });
-        });
-        this.setState({
-          // eslint-disable-next-line react/no-access-state-in-setstate
-          options: [...this.state.options],
-        });
-      }
+      });
+      this.setState({
+        // eslint-disable-next-line react/no-access-state-in-setstate
+        options: [...this.state.options],
+      });
     }
   };
 
@@ -169,6 +150,12 @@ class DynamicFieldSet extends React.Component {
     //   alert('重复表');
     // }
   };
+  displayRender = (label,value)=>{
+    if(label.length<4&&value){
+      return value.join('/')
+    }
+    return label.join('/');
+  }
 
   render() {
     const { list = [] } = this.state;
@@ -192,6 +179,7 @@ class DynamicFieldSet extends React.Component {
                   loadData={this.loadData}
                   onChange={e => this.onChange(e, v)}
                   value={v.value}
+                  displayRender={(label)=>this.displayRender(label,v.value)}
                   // changeOnSelect
                 />
               )}

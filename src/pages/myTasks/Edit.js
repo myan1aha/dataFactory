@@ -9,10 +9,10 @@ import InsertForm from './InsertForm'
 const { TextArea } = Input;
 const layout = {
     labelCol: {
-        span: 10,
+        span: 8,
     },
     wrapperCol: {
-        span: 10,
+        span: 16,
     },
 };
 const tailLayout = {
@@ -24,11 +24,9 @@ const tailLayout = {
 const formItemLayout = {
     labelCol: {
         xs: { span: 4 },
-        sm: { span: 4 },
     },
     wrapperCol: {
-        xs: { span: 8 },
-        sm: { span: 8 },
+        xs: { span: 14 },
     },
 };
 
@@ -36,8 +34,9 @@ function value2form(values) {
     const params = { ...values };
     params.parNode = params.parentNode;
     delete params.parentNode;
-    // params.dataInputs = params.dataInputs.map(v => v.split('/'));
-    // params.dataOutputs = params.dataOutputs.map(v => v.split('/'));
+    params.dataInputs = params.dataInputs.map(v => v.split('/'));
+    // params.dataInputs = [['a', 'b'], ['c']];
+    params.dataOutputs = params.dataOutputs.map(v => v.split('/'));
     params.command = params.command.map(v => v[Object.keys(v)[0]])
     // params.numRetry = Number(params.numRetry);
     // params.retryInterval = Number(params.retryInterval);
@@ -45,7 +44,7 @@ function value2form(values) {
 }
 
 export function formatValues(values) {
-    let params = { ...values };
+    const params = { ...values };
     params.parentNode = params.parentNode;
     delete params.parNode;
     params.dataInputs = params.dataInputs.map(v => v.join('/'));
@@ -53,6 +52,7 @@ export function formatValues(values) {
     params.command = params.command.map((v, index) => ({
         [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
     }))
+
     params.numRetry = Number(params.numRetry);
     params.retryInterval = Number(params.retryInterval);
     return params;
@@ -71,7 +71,6 @@ class TasksEdit extends React.Component {
     //     //     form: {},
     //     // }
     // }
-    
 
     // eslint-disable-next-line react/sort-comp
     saveTask = () => {
@@ -115,16 +114,19 @@ class TasksEdit extends React.Component {
         this.props.dispatch({
           type: 'task/getTaskDetail',
           payload: {
-            id: this.props.location.query.id,
+            // id: this.props.location.query.id,
+            taskName: this.props.location.query.taskName,
+            projectName: this.props.location.query.projectName,
           },
+        }).then(res => {
+            console.log(res)
+            setTimeout(() => {
+                if (res) {
+                    this.props.form.setFieldsValue(value2form(res));
+                }
+            }, 10);
         });
-        setTimeout(() => {
-            const data = this.props.task.selectDetail;
-            console.log(data);
-            if (data) {
-                this.props.form.setFieldsValue(value2form(data));
-            }
-        }, 500);
+       
       }
 
     render() {
@@ -136,7 +138,7 @@ class TasksEdit extends React.Component {
                         <Link to="/">Home</Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <Link to="/tasks">Tasks Application</Link>
+                        <Link to="/myTasks">Tasks Application</Link>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
                         Tasks Edit
@@ -166,10 +168,11 @@ class TasksEdit extends React.Component {
                                                     required: true,
                                                     message: `请输入${item.label}`,
                                                     validator: this.validator,
+                                                    // type: item.dataType,
                                                   },
                                                 ],
                                             })(
-                                                 item.type === 'input' ? <Input placeholder={`请输入${item.label}`}/>
+                                                 item.type === 'input' ? <Input placeholder={`请输入${item.label}`} disabled = {item.name === 'id'}/>
                                                                         : <TextArea></TextArea>,
                                             )}
                                         </Form.Item>
@@ -184,6 +187,7 @@ class TasksEdit extends React.Component {
                                             {
                                                 required: false,
                                                 message: `请输入${item.label}`,
+                                                // type: item.dataType,
                                             },
                                             ],
                                         })(
