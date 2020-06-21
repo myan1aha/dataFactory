@@ -22,7 +22,7 @@ export async function getTableDetail(params) {
   return result || {};
 }
 
-//获取实例详情
+// 获取实例详情
 export async function getEntityDetail(params) {
   console.log(params);
   const result = await request(`/meta/get/subs${params ? `?entityId=${params}` : ''}`);
@@ -42,11 +42,10 @@ export async function getList() {
 export async function getProJson(params) {
   console.log('getProJson', params);
   // const result = await request(`/node/projectjson${params ? `?projectName=${params}` : ''}`);
-  const result = await request(`/node/projectjson${params ? `?projectName=test4` : ''}`);
+  const result = await request(`/node/projectjson${params ? '?projectName=test4' : ''}`);
   console.log(result);
   return result;
 }
-
 
 export async function addTask(params) {
   console.log('addTask', params);
@@ -55,6 +54,15 @@ export async function addTask(params) {
     data: params,
   });
   console.log('addTask', result);
+  return result;
+}
+
+export async function analyseTask(params) {
+  const res = await res('', {
+    methid: 'GET',
+    data: params,
+  });
+  console.log('analyseTask', result);
   return result;
 }
 

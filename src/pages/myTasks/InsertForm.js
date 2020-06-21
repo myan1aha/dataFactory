@@ -11,7 +11,7 @@ import styles from './index.less';
 //   array = array.slice();
 //   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
 
-//   return array;
+//   return array;f
 // }
 const options = [
   {
@@ -63,17 +63,17 @@ class DynamicFieldSet extends React.Component {
     };
   }
 
-    static getDerivedStateFromProps(nextProps, state) {
-        const { value, required } = nextProps;
-        // console.log(value)
-        if (value && value !== state.value) {
-          return {
-            value,
-            list: value.length > 0 ? value.map(v => ({ value: v })) : required ? [{ value: '' }] : [],
-          };
-        }
-     return null;
+  static getDerivedStateFromProps(nextProps, state) {
+    const { value, required } = nextProps;
+    // console.log(value)
+    if (value && value !== state.value) {
+      return {
+        value,
+        list: value.length > 0 ? value.map(v => ({ value: v })) : required ? [{ value: '' }] : [],
+      };
     }
+    return null;
+  }
 
   loadData = async selectedOptions => {
     console.log('loadData', selectedOptions);
@@ -141,21 +141,22 @@ class DynamicFieldSet extends React.Component {
     // console.log(isExist);
     // if (!isExist) {
     //   // console.log("没有重复");
-      item.value = value;
-      // this.setState({});
-      const { onChange } = this.props;
-      // eslint-disable-next-line no-unused-expressions
-      onChange && onChange(list.map(v => v.value));
+    item.value = value;
+    // this.setState({});
+    const { onChange } = this.props;
+    // eslint-disable-next-line no-unused-expressions
+    onChange && onChange(list.map(v => v.value));
     // } else {
     //   alert('重复表');
     // }
   };
-  displayRender = (label,value)=>{
-    if(label.length<4&&value){
-      return value.join('/')
+
+  displayRender = (label, value) => {
+    if (label.length < 4 && value) {
+      return value.join('/');
     }
     return label.join('/');
-  }
+  };
 
   render() {
     const { list = [] } = this.state;
@@ -179,7 +180,7 @@ class DynamicFieldSet extends React.Component {
                   loadData={this.loadData}
                   onChange={e => this.onChange(e, v)}
                   value={v.value}
-                  displayRender={(label)=>this.displayRender(label,v.value)}
+                  displayRender={label => this.displayRender(label, v.value)}
                   // changeOnSelect
                 />
               )}
