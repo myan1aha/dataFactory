@@ -6,12 +6,13 @@ import { Button, Icon, Input, Cascader, Form } from 'antd';
 // import LazyCascader from './LazyCascader';
 import { getTableDetail, getEntityDetail } from './service';
 import styles from './index.less';
+import { connect } from 'dva';
 
 // function arrayMove(array, from, to) {
 //   array = array.slice();
 //   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
 
-//   return array;f
+//   return array;
 // }
 const options = [
   {
@@ -60,46 +61,74 @@ class DynamicFieldSet extends React.Component {
       alertStyle: {
         display: 'none',
       },
+      // qualifiedName: [],
     };
   }
 
-  static getDerivedStateFromProps(nextProps, state) {
-    const { value, required } = nextProps;
-    // console.log(value)
-    if (value && value !== state.value) {
-      return {
-        value,
-        list: value.length > 0 ? value.map(v => ({ value: v })) : required ? [{ value: '' }] : [],
-      };
+    static getDerivedStateFromProps(nextProps, state) {
+        const { value, required } = nextProps;
+        // console.log(value)
+        if (value && value !== state.value) {
+          return {
+            value,
+            list: value.length > 0 ? value.map(v => ({ value: v })) : required ? [{ value: '' }] : [],
+          };
+        }
+     return null;
     }
-    return null;
-  }
 
   loadData = async selectedOptions => {
-    console.log('loadData', selectedOptions);
+    // console.log('loadData', selectedOptions);
     const len = selectedOptions.length;
     const targetOption = selectedOptions[len - 1];
     targetOption.loading = true;
 
     // console.log(targetOption.value);
-    const params = len === 1 ? targetOption.value : targetOption.id;
-    const res = await getTableDetail(params);
-    if (res) {
-      console.log(res);
-      targetOption.loading = false;
-      targetOption.children = [];
-      res.forEach(item => {
-        targetOption.children.push({
-          label: item.name,
-          value: item.name,
-          id: item.id,
-          isLeaf: len === 3,
+    let res;
+    if (len === 1) {
+      res = await getTableDetail(targetOption.value);
+      if (res) {
+        targetOption.loading = false;
+        targetOption.children = [];
+        res.forEach(item => {
+          targetOption.children.push({
+            label: item.name,
+            value: item.name,
+            id: item.id,
+            isLeaf: false,
+          });
         });
-      });
-      this.setState({
-        // eslint-disable-next-line react/no-access-state-in-setstate
-        options: [...this.state.options],
-      });
+        this.setState({
+          // eslint-disable-next-line react/no-access-state-in-setstate
+          options: [...this.state.options],
+        });
+      }
+    } else {
+      res = await getEntityDetail(targetOption.id)
+      if (res) {
+        targetOption.loading = false;
+        targetOption.children = [];
+        res.collection.forEach(item => {
+          targetOption.children.push({
+            label: item.name || '',
+            value: item.name || '',
+            id: item.id,
+            isLeaf: len === 3,
+          });
+          // if ( len === 3 ) {
+
+          // }
+          // const { qualifiedName } = this.state;
+          // qualifiedName.push(item.qualifiedName);
+          // this.setState({
+          //   qualifiedName: qualifiedName
+          // })
+        });
+        this.setState({
+          // eslint-disable-next-line react/no-access-state-in-setstate
+          options: [...this.state.options],
+        });
+      }
     }
   };
 
@@ -109,7 +138,7 @@ class DynamicFieldSet extends React.Component {
       console.log(v, k);
       return v !== k;
     });
-    console.log(list);
+    // console.log(list);
     const { required } = this.props;
     if (required && list.length < 1) {
       // eslint-disable-next-line no-unused-expressions
@@ -141,11 +170,11 @@ class DynamicFieldSet extends React.Component {
     // console.log(isExist);
     // if (!isExist) {
     //   // console.log("没有重复");
-    item.value = value;
-    // this.setState({});
-    const { onChange } = this.props;
-    // eslint-disable-next-line no-unused-expressions
-    onChange && onChange(list.map(v => v.value));
+      item.value = value;
+      // this.setState({});
+      const { onChange } = this.props;
+      // eslint-disable-next-line no-unused-expressions
+      onChange && onChange(list.map(v => v.value));
     // } else {
     //   alert('重复表');
     // }
@@ -153,10 +182,10 @@ class DynamicFieldSet extends React.Component {
 
   displayRender = (label, value) => {
     if (label.length < 4 && value) {
-      return value.join('/');
+      return value.join('/')
     }
     return label.join('/');
-  };
+  }
 
   render() {
     const { list = [] } = this.state;
@@ -176,11 +205,12 @@ class DynamicFieldSet extends React.Component {
                 //   <Select.Option value="a">ddd</Select.Option>
                 // </Select>
                 <Cascader
+                  notFoundContent="nothing"
                   options={this.state.options}
                   loadData={this.loadData}
                   onChange={e => this.onChange(e, v)}
                   value={v.value}
-                  displayRender={label => this.displayRender(label, v.value)}
+                  displayRender={(label)=>this.displayRender(label,v.value)}
                   // changeOnSelect
                 />
               )}
@@ -198,7 +228,7 @@ class DynamicFieldSet extends React.Component {
             </div>
           </Form.Item>
         ))}
-        <div style={{ marginTop: '-10px' }}>
+        <div>
           <Button style={{ width: '30%' }} type="primary" onClick={this.add}>
             新增{label}
           </Button>

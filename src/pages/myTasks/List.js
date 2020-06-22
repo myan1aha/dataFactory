@@ -43,37 +43,40 @@ class Tasks extends React.Component {
         dataIndex: 'id',
         //   key: 'id',
         width: '15%',
-        sorter: {
-          compare: (a, b) => a.id > b.id,
-        },
+        sorter: (a, b) => (a.id - b.id ? 1 : -1),
+        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '项目名称',
         dataIndex: 'projectName',
         //   key: 'name_en',
         width: '10%',
+        sorter: (a, b) => (a.projectName - b.projectName ? 1 : -1),
+        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '任务名称',
         dataIndex: 'taskName',
         //   key: 'name',
         width: '10%',
+        sorter: (a, b) => (a.taskName - b.taskName ? 1 : -1),
+        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '上游节点',
-        dataIndex: 'parNode',
+        dataIndex: 'parentNode',
         // key: 'type',
         width: '10%',
+        sorter: (a, b) => (a.parentNode - b.parentNode ? 1 : -1),
+        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '负责人',
         dataIndex: 'owner',
         // key: 'inCharge',
         width: '10%',
-        sorter: {
-          compare: (a, b) => (a.owner > b.owner ? 1 : -1),
-          multiple: 5,
-        },
+        sorter: (a, b) => (a.owner - b.owner ? 1 : -1),
+        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '基本描述',
@@ -87,7 +90,7 @@ class Tasks extends React.Component {
         // key: 'option',
         width: '8%',
         render: (_, records) => {
-          const { visible, confirmLoading, dataSource, isPage, title, isShowHeader } = this.state;
+          // const { visible, confirmLoading, dataSource, isPage, title, isShowHeader } = this.state;
           return (
             <ul style={{ display: 'inline' }}>
               <li style={listStyle}>
@@ -238,14 +241,6 @@ class Tasks extends React.Component {
       task: { list = [], page = 1, pageSize = 10, total = 0 },
     } = this.props;
 
-    // eslint-disable-next-line array-callback-return
-    list.forEach(item => {
-      // eslint-disable-next-line no-param-reassign
-      item.key = item.id;
-    });
-    // 将拿到的数据中字段名“parentNode”修改成“parNode”
-    const listParse = JSON.parse(JSON.stringify(list).replace(/parentNode/g, 'parNode'));
-
     if (!pageSizeOptions.includes(`${pageSize}`)) {
       pageSizeOptions.push(`${pageSize}`);
       pageSizeOptions = pageSizeOptions.sort((a, b) => a - b);
@@ -280,8 +275,9 @@ class Tasks extends React.Component {
               /> */}
           <Table
             className="compact-table"
-            pagination={this.state.isPage}
-            dataSource={listParse}
+            // pagination={this.state.isPage}
+            pagination={pagination}
+            dataSource={list}
             columns={this.columns}
             onChange={this.handleTableChange}
             // bordered
@@ -291,7 +287,7 @@ class Tasks extends React.Component {
           title={this.state.title}
           width={'70%'}
           onCancel={this.handleCancel}
-          destroyOnClose={true}
+          destroyOnClose
           visible={this.state.visible}
           footer={null}
           wrapClassName="scroll-modal no-padding"
@@ -302,7 +298,6 @@ class Tasks extends React.Component {
             onUpload={this.handleOk}
           />
         </Modal>
-        {/* <Pagination/> */}
       </div>
     );
   }

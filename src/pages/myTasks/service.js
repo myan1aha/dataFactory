@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-06-18 22:18:16
- * @LastEditTime: 2020-06-22 00:08:07
+ * @LastEditTime: 2020-06-18 22:47:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /dataFactory/src/pages/Tasks/service.js
@@ -11,42 +11,45 @@ import { stringify } from 'qs';
 
 export async function getTaskDetail(params) {
   const result = await request(`/node${params ? `?${stringify(params)}` : ''}`);
-  // console.log('getTaskDetail', result);
   return result;
 }
 
 export async function getTableDetail(params) {
-  console.log(params);
   const result = await request(`/meta/server/get${params ? `?type=${params}` : ''}`);
-  console.log('getTableDetail', result);
   return result || {};
 }
 
 // 获取实例详情
 export async function getEntityDetail(params) {
-  console.log(params);
   const result = await request(`/meta/get/subs${params ? `?entityId=${params}` : ''}`);
-  console.log('getTableDetail', result);
   return result || {};
 }
 
+// 获取任务列表
 export async function getList() {
-  console.log('getList');
   const result = await request('/node/list');
-  // console.log(result);
   const list = [...result];
-
   return { list };
+}
+
+// 获取项目详情
+export async function getProList() {
+  console.log('getProList');
+  const result = await request('/node/projectNames');
+  // console.log(result);
+  const proList = [...result];
+  return proList;
 }
 
 export async function getProJson(params) {
   console.log('getProJson', params);
   // const result = await request(`/node/projectjson${params ? `?projectName=${params}` : ''}`);
-  const result = await request(`/node/projectjson${params ? '?projectName=test4' : ''}`);
+  const result = await request(`/node/projectjson${params ? `?projectName=test4` : ''}`);
   console.log(result);
   return result;
 }
 
+//添加任务
 export async function addTask(params) {
   console.log('addTask', params);
   const result = await request('/node/create', {
@@ -57,15 +60,18 @@ export async function addTask(params) {
   return result;
 }
 
-export async function analyseTask(params) {
-  const res = await res('', {
-    methid: 'GET',
+//解析任务依赖
+export async function taskDependency(params) {
+  console.log('taskDependency');
+  const result = await request('/node/dependency', {
+    method: 'POST',
     data: params,
   });
-  console.log('analyseTask', result);
+  console.log(result);
   return result;
 }
 
+//编辑任务
 export async function editTask(params) {
   console.log('send edit', params);
   const result = await request('/node/update', {

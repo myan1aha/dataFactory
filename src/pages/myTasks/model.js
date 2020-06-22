@@ -96,11 +96,6 @@ export default {
       return response;
     },
 
-    *analyseTask({ payload }, { call, put }) {
-      const response = yield call(analyseTask, payload);
-      return response;
-    },
-
     *getTaskDetail({ payload }, { call, put }) {
       const response = yield call(getTaskDetail, payload);
       yield put({

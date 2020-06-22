@@ -27,10 +27,10 @@ export default [
             path: '/myTasks',
             redirect: '/myTasks/list',
           },
-          { 
-            path: '/myTasks/relationship',
-            name: 'relationship',
-            component: './myTasks/Relationship',
+          {
+            path: '/myTasks/list',
+            name: 'list',
+            component: './myTasks/List',
             extra: true,
           },
           {
@@ -38,10 +38,10 @@ export default [
             name: 'create',
             component: './myTasks/Create',
           },
-          {
-            path: '/myTasks/list',
-            name: 'list',
-            component: './myTasks/List',
+          { 
+            path: '/myTasks/relationship',
+            name: 'relationship',
+            component: './myTasks/Relationship',
             extra: true,
           },
           {
@@ -55,6 +55,7 @@ export default [
             name: 'data',
             component: './myTasks/Data',
             extra: true,
+            hideInMenu: true,
           }
         ]
       },
