@@ -1,4 +1,4 @@
-import { getList, addTask, editTask, portTask, deleteTask, getTaskDetail } from './service';
+import { getList, addTask, editTask, portTask, deleteTask, getTaskDetail, getTargetList } from './service';
 
 let PAGESIZE = 10;
 if (document.body.clientHeight - 300 > 0) {
@@ -55,6 +55,27 @@ export default {
           type: 'save',
           payload: {
             list: response.list,
+            pageSize: params.pageSize,
+            page,
+          },
+        });
+        yield put({
+          type: 'saveFilter',
+          payload: filter,
+        });
+      }
+    },
+
+    *getTargetList({ payload }, { call, put }) {
+      const { page = 1, pageSize, ...filter } = payload;
+      const params = decreaseFormat(payload);
+      // console.log(params);
+      const response = yield call(getTargetList, params);
+      if (response) {
+        yield put({
+          type: 'save',
+          payload: {
+            list: response.list ? response.list : [],
             pageSize: params.pageSize,
             page,
           },

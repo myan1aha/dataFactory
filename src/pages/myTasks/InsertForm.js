@@ -1,19 +1,15 @@
-/* eslint-disable comma-dangle */
+/* eslint-disable no-param-reassign */
+/* eslint-disable react/no-access-state-in-setstate */
 /* eslint-disable object-shorthand */
+/* eslint-disable no-nested-ternary */
+
 import React from 'react';
 import { Button, Icon, Input, Cascader, Form } from 'antd';
 
-// import LazyCascader from './LazyCascader';
 import { getTableDetail, getEntityDetail } from './service';
 import styles from './index.less';
-import { connect } from 'dva';
 
-// function arrayMove(array, from, to) {
-//   array = array.slice();
-//   array.splice(to < 0 ? array.length + to : to, 0, array.splice(from, 1)[0]);
 
-//   return array;
-// }
 const options = [
   {
     value: 'Mongo:',
@@ -115,17 +111,8 @@ class DynamicFieldSet extends React.Component {
             id: item.id,
             isLeaf: len === 3,
           });
-          // if ( len === 3 ) {
-
-          // }
-          // const { qualifiedName } = this.state;
-          // qualifiedName.push(item.qualifiedName);
-          // this.setState({
-          //   qualifiedName: qualifiedName
-          // })
         });
         this.setState({
-          // eslint-disable-next-line react/no-access-state-in-setstate
           options: [...this.state.options],
         });
       }
@@ -133,15 +120,9 @@ class DynamicFieldSet extends React.Component {
   };
 
   remove = (e, k) => {
-    // console.log(e, k);
-    const list = this.state.list.filter(v => {
-      console.log(v, k);
-      return v !== k;
-    });
-    // console.log(list);
+    const list = this.state.list.filter(v => v !== k);
     const { required } = this.props;
     if (required && list.length < 1) {
-      // eslint-disable-next-line no-unused-expressions
       this.setState({
         list: [],
       });
@@ -229,7 +210,8 @@ class DynamicFieldSet extends React.Component {
           </Form.Item>
         ))}
         <div>
-          <Button style={{ width: '30%' }} type="primary" onClick={this.add}>
+          {/* <Icon type="plus-circle" onClick={this.add}/> */}
+          <Button style={{ width: '30%' }} onClick={this.add}>
             新增{label}
           </Button>
         </div>

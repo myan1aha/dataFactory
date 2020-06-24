@@ -32,6 +32,26 @@ export async function getList() {
   return { list };
 }
 
+// 获取部分任务列表
+export async function getTargetList(params) {
+  const { taskName, projectName } = params;
+  const val = {
+    taskName,
+    projectName,
+  }
+  console.log(val);
+  const result = await request(`/node/search${val ? `?${stringify(val)}` : ''}`);
+  const list = [...result];
+  return { list };
+}
+
+// 搜索列表
+export async function getSearchList(params) {
+  const result = await request(`/node/list${params ? `?entityId=${params}` : ''}`);
+  const list = [...result];
+  return { list };
+}
+
 // 获取项目详情
 export async function getProList() {
   console.log('getProList');
@@ -42,43 +62,35 @@ export async function getProList() {
 }
 
 export async function getProJson(params) {
-  console.log('getProJson', params);
   // const result = await request(`/node/projectjson${params ? `?projectName=${params}` : ''}`);
   const result = await request(`/node/projectjson${params ? `?projectName=test4` : ''}`);
-  console.log(result);
   return result;
 }
 
 //添加任务
 export async function addTask(params) {
-  console.log('addTask', params);
   const result = await request('/node/create', {
     method: 'POST',
     data: params,
   });
-  console.log('addTask', result);
   return result;
 }
 
 //解析任务依赖
 export async function taskDependency(params) {
-  console.log('taskDependency');
   const result = await request('/node/dependency', {
     method: 'POST',
     data: params,
   });
-  console.log(result);
   return result;
 }
 
 //编辑任务
 export async function editTask(params) {
-  console.log('send edit', params);
   const result = await request('/node/update', {
     method: 'POST',
     data: params,
   });
-  console.log('edit', result);
   return result;
 }
 

@@ -13,8 +13,8 @@ const options = [
   },
   { name: 'parNode', label: '上游节点', type0: 'text', noRequired: true, type: 'input', isEdit: true },
   { name: 'command', label: '命令', type0: 'insertForm', type: 'input' },
-  { name: 'numRetry', label: '失败重启次数', type0: 'text', type: 'input', isEdit: true },
-  { name: 'retryInterval', label: '失败重启间隔', type0: 'text', type: 'input', isEdit: true },
+  { name: 'numRetry', label: '失败重启次数', type0: 'inputNum', type: 'inputNum', isEdit: true, max: 3, min: 0 },
+  { name: 'retryInterval', label: '失败重启间隔', type0: 'inputNum', type: 'inputNum', isEdit: true,max: '', min: 0 },
   { name: 'description', label: '基本描述', type0: 'text', type: 'textarea', isEdit: true },
   { name: 'owner', label: '负责人', type0: 'text', type: 'input', isEdit: true },
 ];
