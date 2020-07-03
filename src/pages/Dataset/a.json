@@ -1,0 +1,45 @@
+{
+    "body":
+        [
+            {
+                "port":27017,
+                "qualifiedName":"MongoServer:/127.0.0.1:27017",
+                "host":"127.0.0.1",
+                "name":"127.0.0.1:27017",
+                "typeName":"MongoServer",
+                "description":"mongo 本地测试",
+                "id":"MongoEntity/57257260",
+                "isActive":true
+            },
+            {
+                "owner":"changhuayu",
+                "port":27017,
+                "qualifiedName":"MongoServer:/192.168.1.36:27017",
+                "host":"192.168.1.36",
+                "name":"192.168.1.36:27017",
+                "typeName":"MongoServer",
+                "description":"36数据库\n",
+                "id":"MongoEntity/57257777",
+                "isActive":true
+            }
+        ],
+    "header":{"code":200,"message":"success"}
+}
+
+{
+    "body":[{
+        "logPosition":745068,
+        "qualifiedName":"MysqlServer:/192.168.1.27:3306",
+        "typeName":"MysqlServer",
+        "description":"Mysql 本地测试",
+        "isActive":true,
+        "password":"liangzhi",
+        "logName":"mysql-bin.023242",
+        "port":3306,
+        "host":"192.168.1.27",
+        "name":"192.168.1.27:3306",
+        "id":"MysqlEntity/57257261",
+        "account":"liangzhi"
+        }],
+    "header":{"code":200,"message":"success"}
+}

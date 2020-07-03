@@ -15,6 +15,6 @@ export async function accountLogin(params) {
     ...params,
     password: encrypt(params.password),
   };
-  const result = await request('/api/project/login', { method: 'post', data });
+  const result = await request('/user/login', { method: 'post', data });
   return result;
 }

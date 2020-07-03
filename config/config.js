@@ -66,6 +66,7 @@ export default {
     'tooltip-arrow-color': 'rgba(20, 28, 57, 0.8)',
     'layout-header-height' : '50px',
   },
+
   define: {
     'process.env.API_HOST': process.env.API_HOST || 'http://192.168.1.34:8095',
     'process.env.AUTH': process.env.AUTH || 0,
@@ -110,6 +111,14 @@ export default {
       changeOrigin: true,
     },
     '/meta': {
+      target: 'http://192.168.1.34:8095',
+      changeOrigin: true,
+    },
+    '/stat': {
+      target: 'http://192.168.1.34:8095',
+      changeOrigin: true,
+    },
+    '/user': {
       target: 'http://192.168.1.34:8095',
       changeOrigin: true,
     }

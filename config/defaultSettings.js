@@ -11,6 +11,6 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'prjname',
+  title: 'dataFactory',
   iconfontUrl: '',//图标库 在header上引用时需要加上icon-前缀
 };

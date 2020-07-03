@@ -10,14 +10,44 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     routes: [
+      // {
+      //   path: '/',
+      //   redirect: '/project',
+      // },
       {
-        path: '/',
-        redirect: '/project',
-      },
-      {
-        path:'/project',
-        name: 'project',
-        component: './Project',
+        path:'/dataset',
+        name: 'dataset',
+        routes: [
+          {
+            path: '/dataset/Manage',
+            name: 'manage',
+            component: './Dataset/Manage',
+          },{
+            path: '/dataset/Mysql',
+            name: 'mysql',
+            component: './Dataset/AllDataset',
+          },{
+            path: '/dataset/Mongodb',
+            name: 'mongodb',
+            component: './Dataset/AllDataset',
+          },{
+            path: '/dataset/Hbase',
+            name: 'hbase',
+            component: './Dataset/AllDataset',
+          },{
+            path: '/dataset/ElasticSearch',
+            name: 'elasticSearch',
+            component: './Dataset/AllDataset',
+          },{
+            path: '/dataset/Hive',
+            name: 'hive',
+            component: './Dataset/AllDataset',
+          },{
+            path: '/dataset/ArangoDB',
+            name: 'arangoDB',
+            component: './Dataset/AllDataset',
+          },
+        ]
       },
       {
         path: '/myTasks',
@@ -49,14 +79,47 @@ export default [
             name: 'edit',
             component: './myTasks/Edit',
             hideInMenu: true,
+          }
+        ]
+      },
+      {
+        path: '/dataOperation',
+        name: 'dataOperation',
+        routes: [
+          // {
+          //   path: '/dataOperation',
+          //   redirect: '/dataOperation',
+          // },
+          {
+            path: '/dataOperation/onlineList',
+            name: 'onlineList',
+            component: './DataOperation/OnlineList',
+            extra: true,
+          },
+        ]
+      },
+      {
+        path: '/report',
+        name: 'report',
+        routes: [
+          {
+            path: '/report/overview',
+            name: 'overview',
+            component: './Report/Form',
+            extra: true,
           },
           {
-            path: '/myTasks/data',
-            name: 'data',
-            component: './myTasks/Data',
+            path: '/report/news',
+            name: 'news',
+            component: './Report/Form',
             extra: true,
-            hideInMenu: true,
-          }
+          },
+          {
+            path: '/report/company',
+            name: 'company',
+            component: './Report/Form',
+            extra: true,
+          },
         ]
       },
       {

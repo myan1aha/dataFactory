@@ -34,7 +34,7 @@ export async function getList() {
 
 // 获取部分任务列表
 export async function getTargetList(params) {
-  const { taskName, projectName } = params;
+  const { taskName = '', projectName = '' } = params;
   const val = {
     taskName,
     projectName,
@@ -54,7 +54,6 @@ export async function getSearchList(params) {
 
 // 获取项目详情
 export async function getProList() {
-  console.log('getProList');
   const result = await request('/node/projectNames');
   // console.log(result);
   const proList = [...result];
@@ -69,6 +68,7 @@ export async function getProJson(params) {
 
 //添加任务
 export async function addTask(params) {
+  console.log('addTask', params)
   const result = await request('/node/create', {
     method: 'POST',
     data: params,

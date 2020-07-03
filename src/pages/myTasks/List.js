@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable max-len */
 import React from 'react';
-import { Table, Breadcrumb, Popconfirm, message, Spin, Modal, Icon, Input, Select, Tooltip, Button, Form } from 'antd';
+import { Table, Breadcrumb, Popconfirm, message, Spin, Modal, Icon, Input, Select, Tooltip, Button, Tag } from 'antd';
 import Link from 'umi/link';
 import { connect } from 'dva';
 // import { getSearchList } from './service'
@@ -15,7 +16,7 @@ const { Option } = Select;
 // import Task from './tasks'
 // import Filter from './Filter'
 
-let pageSizeOptions = ['1', '2', '3'];
+let pageSizeOptions = ['5', '10', '15', '20'];
 
 const listStyle = {
   width: '30%',
@@ -51,40 +52,41 @@ class Tasks extends React.Component {
         dataIndex: 'id',
         //   key: 'id',
         width: '15%',
-        sorter: (a, b) => (a.id - b.id ? 1 : -1),
-        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '项目名称',
         dataIndex: 'projectName',
         //   key: 'name_en',
         width: '10%',
-        sorter: (a, b) => (a.projectName - b.projectName ? 1 : -1),
-        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '任务名称',
         dataIndex: 'taskName',
         //   key: 'name',
         width: '10%',
-        sorter: (a, b) => (a.taskName - b.taskName ? 1 : -1),
-        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '上游节点',
         dataIndex: 'parentNode',
         // key: 'type',
         width: '10%',
-        sorter: (a, b) => (a.parentNode - b.parentNode ? 1 : -1),
-        sortDirections: ['descend', 'ascend'],
+        render: parentNode => {
+          if (parentNode) {
+            const tags = parentNode.split(',');
+            return tags.map(tag => (
+                          <Tag key={tag}>
+                            {tag}
+                          </Tag>
+                        ));
+          }
+          return null;
+          },
       },
       {
         title: '负责人',
         dataIndex: 'owner',
         // key: 'inCharge',
         width: '10%',
-        sorter: (a, b) => (a.owner - b.owner ? 1 : -1),
-        sortDirections: ['descend', 'ascend'],
       },
       {
         title: '基本描述',
@@ -108,7 +110,6 @@ class Tasks extends React.Component {
                           projectName: records.projectName,
                         },
                       }}
-                  onClick={this.editRow}
                 >
                   <Tooltip title="编辑">
                     <Icon type="edit" />
@@ -117,10 +118,10 @@ class Tasks extends React.Component {
               </li>
               <li style={listStyle}>
                 <Popconfirm
-                  title="Are you sure delete this task?"
+                  title="确认删除该项任务?"
                   onConfirm={e => this.deleteTask(e, records.projectName, records.taskName)}
-                  okText="Yes"
-                  cancelText="No"
+                  okText="确认"
+                  cancelText="取消"
                 >
                   <Tooltip title="删除">
                     <Icon type="delete" style={{ color: 'darkred' }} />
@@ -140,21 +141,11 @@ class Tasks extends React.Component {
   }
 
   componentDidMount() {
-    // const { role, areaCode, userId } = this.props.permission;
     this.props.dispatch({
       type: 'task/getList',
       payload: {
         proName: '',
         taskName: '',
-        dataInputs: [],
-        dataOutputs: [],
-        taskDependencies: '',
-        parentNode: '',
-        command: [],
-        numRetry: '',
-        retryInterval: '',
-        description: '',
-        owner: '',
       },
     }).then(() => {
       const proList = new Set();
@@ -168,7 +159,6 @@ class Tasks extends React.Component {
         taskList: [...taskList],
         searchList: [...proList],
       })
-      // console.log(this.state.proList);
     });
   }
 
@@ -222,7 +212,7 @@ class Tasks extends React.Component {
 
   onListChange = params => {
     const { filter } = this.props.task;
-    console.log(this.props);
+    console.log(filter);
     this.props.dispatch({
       type: 'task/getList',
       payload: { ...filter, ...params },
@@ -235,59 +225,40 @@ class Tasks extends React.Component {
   //   });
   // };
 
-  searchList = value => {
-    console.log('searchList');
-    const { searchName } = this.state;
-    const params = {};
-    params[`${searchName}`] = value;
-    console.log(params);
-    // this.onListChange({
-    //   ...params,
-    // })
-  }
+  // searchList = value => {
+  //   console.log('searchList');
+  //   const { searchName } = this.state;
+  //   const params = {};
+  //   params[`${searchName}`] = value;
+  //   console.log(params);
+  //   // this.onListChange({
+  //   //   ...params,
+  //   // })
+  // }
 
-
+  // 选择需要查询的字段名触发（查询的是项目名称，还是任务名称）
   onSelectChange = value => {
     const { taskList, proList } = this.state;
+    const list = value === 'projectName' ? proList : taskList;
     this.setState({
       searchName: value,
-      searchList: [],
-    }, () => {
-      // eslint-disable-next-line react/no-access-state-in-setstate
-      const list = this.state.searchName === 'projectName' ? proList : taskList;
-      this.setState({
-        searchList: list,
-      })
+      searchList: list,
     })
   }
 
+  // 选择具体的项目/任务名称之后触发
   onSearchChange = value => {
-    // console.log(value);
     const { searchName } = this.state;
-    if (searchName === 'projectName') {
-      this.setState({
-        projectName: value,
-        taskName: '',
-      })
-    } else {
-      this.setState({
-        taskName: value,
-        projectName: '',
-      })
-    }
-    // const params = searchName==='projectName' ? { projectName: value } : { taskName: value };
-    // this.onListChange(params);
+    const params = searchName === 'projectName' ? { projectName: value, taskName: '' } : { projectName: '', taskName: value };
+    this.getSearchList(params)
   }
 
+  // 通过参数查询所要搜索的任务列表
   getSearchList = param => {
     isSearch = true;
-    console.log(this.state);
     const params = {
       ...param,
-      taskName: this.state.taskName,
-      projectName: this.state.projectName,
     }
-    console.log(params);
     const { filter } = this.props.task;
     this.props.dispatch({
       type: 'task/getTargetList',
@@ -298,7 +269,6 @@ class Tasks extends React.Component {
   goAllList = () => {
     isSearch = false;
     this.props.history.push('/myTasks');
-    // console.log(this.props);
   }
 
   handleTableChange = (pagination, _, sorter) => {
@@ -343,7 +313,7 @@ class Tasks extends React.Component {
 
   render() {
     const {
-      task: { list = [], page = 1, pageSize = 10, total = 0 },
+      task: { list = [], page = 1, pageSize = 20, total = 0 },
     } = this.props;
 
     // const { searchName, searchList } = this.state;
@@ -366,7 +336,7 @@ class Tasks extends React.Component {
     })
     return (
       <div>
-        <Breadcrumb>
+        {/* <Breadcrumb>
           <Breadcrumb.Item>
             <Link to="/">Home</Link>
           </Breadcrumb.Item>
@@ -374,31 +344,48 @@ class Tasks extends React.Component {
             <Link to="/myTasks">Tasks Application</Link>
           </Breadcrumb.Item>
           <Breadcrumb.Item>Tasks List</Breadcrumb.Item>
-        </Breadcrumb>
+        </Breadcrumb> */}
         <Spin spinning={this.props.loadingTask}>
           {/* <Filter
                 onChange={this.onFilterChange}
                 scaleList={scaleList}
                 selectDetail={selectDetail}
               /> */}
-          <div style={{ margin: '10px 0' }}>
-            <Button style={{ display: 'inline', float: 'left' }} onClick={this.goAllList}>
+          <div style={{ margin: '10px 0', display: 'flex' }}>
+            <Button onClick={this.goAllList}>
               显示全部任务
             </Button>
-            <Input.Group style={{ marginBottom: '10px', marginLeft: '55%', display: 'inline' }}>
+            <Input.Group style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
               <Select defaultValue="projectName" onSelect={value => { this.onSelectChange(value) }}>
                 <Select.Option value="projectName">项目名称</Select.Option>
                 <Select.Option value="taskName">任务名称</Select.Option>
               </Select>
-              <Select
-                style={{ width: '20%' }}
-                placeholder={`请选择${searchNameCN}`}
-                onChange={this.onSearchChange}
-                allowClear
-              >
-                {this.state.searchList.map(item => <Option value={item} key={item}>{item}</Option>)}
-              </Select>
-              <Button type="primary" icon="search" onClick={this.getSearchList}></Button>
+              {
+                this.state.searchName === 'projectName'
+                ? (
+                  <Select
+                    showSearch
+                    style={{ width: '20%' }}
+                    placeholder={`请选择${searchNameCN}`}
+                    onChange={this.onSearchChange}
+                    allowClear
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {this.state.searchList.map(item => <Option value={item} key={item}>{item}</Option>)}
+                  </Select>
+                ) : (
+                  <Input.Search
+                    placeholder="请输入任务名称"
+                    allowClear
+                    onSearch={this.onSearchChange}
+                    style={{ width: '20%' }}
+                  />
+                )
+              }
+              {/* <Button type="primary" icon="search" onClick={this.getSearchList}></Button> */}
             </Input.Group>
           </div>
           <Table

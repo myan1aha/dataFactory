@@ -31,7 +31,7 @@ function changeSvg(element, settings) {
   }
 }
 
-function polyline(parent, name, points, settings) {
+function polyline(parent, points, settings) {
   var ps = '';
   for (var i = 0; i < points.length; i++) {
     ps += points[i].join() + ' ';

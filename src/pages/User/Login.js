@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox, Alert, Carousel } from 'antd';
-import router from 'umi/router';
+// import router from 'umi/router';
 import styles from './Login.less';
 
 const calarray = [
-  { title: '产业地图', subTitle: ['全球产业链精准合作招商平台'] },
+  { title: 'title1', subTitle: ['subtitle1'] },
   {
-    title: '智能项目管理',
-    subTitle: ['行程与记录工具、报送、初审、研判进度', '实时掌握团队组织，项目管理更智能更快捷'],
+    title: 'title2',
+    subTitle: ['subtitle2'],
   },
-  { title: '智慧招商', subTitle: ['大数据招商解决方案'] },
+  { title: 'title3', subTitle: ['subtitle3'] },
 ];
 @connect(({ loading }) => ({
   loading: false,
@@ -31,11 +31,13 @@ class LoginPageForm extends Component {
       }
     });
   };
+
   errorCallBack = error => {
     this.setState({
       error,
     });
   };
+  
   renderMessage = content => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
@@ -71,8 +73,8 @@ class LoginPageForm extends Component {
               >
                 <Form.Item>
                   <div className={styles.title1}>欢迎登录</div>
-                  <div className={styles.title}>浙江省工业和信息化</div>
-                  <div className={styles.title}>精准合作重点项目平台</div>
+                  {/* <div className={styles.title}>数据工厂</div> */}
+                  {/* <div className={styles.title}>精准合作重点项目平台</div> */}
                 </Form.Item>
                 {error ? <Form.Item>{this.renderMessage(error)}</Form.Item> : null}
                 <Form.Item label="手机号码" style={{ marginBottom: '0.8rem' }}>

@@ -1,6 +1,6 @@
 import { getList, addTask, editTask, portTask, deleteTask, getTaskDetail, getTargetList } from './service';
 
-let PAGESIZE = 10;
+let PAGESIZE = 20;
 if (document.body.clientHeight - 300 > 0) {
   // eslint-disable-next-line radix
   const tempN = parseInt((document.body.clientHeight - 300) / 55);

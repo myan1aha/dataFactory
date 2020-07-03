@@ -1,13 +1,10 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable max-len */
 import React from 'react';
-import { Breadcrumb, Form, Input, Button, Select, Tag, InputNumber, Tooltip, Card } from 'antd';
+import { Form, Input, Button, Select, Tag, InputNumber, Tooltip, message } from 'antd';
 import { connect } from 'dva';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import Link from 'umi/link';
-import options from './options'
-import InsertFrom from './InsertForm'
+import options from './components/options'
+import InsertFrom from './components/Input/InsertForm'
 import { taskDependency, getProList } from './service';
 
 const { TextArea } = Input;
@@ -40,9 +37,10 @@ function formatValues(values) {
   delete params.parNode;
   params.dataInputs = (params.dataInputs || []).map(v => v.join('/'));
   params.dataOutputs = (params.dataOutputs || []).map(v => v.join('/'));
-//   params.command = params.command.map((v, index) => ({
-//     [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
-//   }));
+  params.failEmails = params.failEmails ? params.failEmails : '';
+  params.command = params.command.map((v, index) => ({
+    [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
+  }));
 
   params.numRetry = Number(params.numRetry);
   params.retryInterval = Number(params.retryInterval);
@@ -100,11 +98,17 @@ class TasksCreate extends React.Component {
   };
 
     onAnalyse = () => {
-        const { validateFieldsAndScroll } = this.props.form;
-        validateFieldsAndScroll(['projectName', 'dataInputs'], err => {
-            if (err) return;
-            this.analyseDependency();
-        })
+        const { getFieldsValue } = this.props.form;
+        const { dataInputs, projectName } = getFieldsValue(['projectName', 'dataInputs']);
+        if (!projectName) {
+            message.error('请输入项目名称！');
+            return;
+        }
+        if (!dataInputs) {
+            message.error('请输入来源表！');
+            return;
+        }
+        this.analyseDependency();
     };
 
     analyseDependency = async () => {
@@ -115,9 +119,7 @@ class TasksCreate extends React.Component {
         setFieldsValue({
             taskDependencies: res.dependencies,
         })
-        console.log(res.dependency);
         if (res.dependency.length > 0) {
-            console.log('success');
             this.setState({
                 dependencyList: res.dependency,
             })
@@ -136,7 +138,7 @@ class TasksCreate extends React.Component {
         }
         return (
             <div>
-                <Breadcrumb >
+                {/* <Breadcrumb >
                     <Breadcrumb.Item>
                         <Link to="/">Home</Link>
                     </Breadcrumb.Item>
@@ -147,132 +149,130 @@ class TasksCreate extends React.Component {
                         Tasks Creation
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                <br></br>
+                <br></br> */}
                 <Form {...layout} name="basic">
                     {options.map(item => {
-                            if (item.name !== 'id') {
-                                switch (item.type0) {
-                                    case 'text':
-                                        return (
-                                            <Form.Item
-                                                label={`${item.label}`}
-                                                name={`${item.name}`}
-                                                key={item.key}
-                                                {...formItemLayout}
-                                            >
-                                                {getFieldDecorator(item.name, {
-                                                    rules: [
-                                                    {
-                                                        required: item.noRequired ? false : true,
-                                                        message: `请输入${item.label}`,
-                                                    },
-                                                    ],
-                                                })(
-                                                    item.type === 'input' ? <Input placeholder={`请输入${item.label}`} key={item.name}/>
-                                                                            : <TextArea key={item.name}></TextArea>,
-                                                )}
-                                                 <div style={{ display: 'inline' }}>
-                                                    { item.name === 'retryInterval' ? (<Tag style={{ fontSize: '13px' }} key={item.name}>毫秒</Tag>) : null }
-                                                </div>
-                                            </Form.Item>
-                                        );
-                                        case 'inputNum':
-                                            return (
-                                                <Form.Item
-                                                    label={`${item.label}`}
-                                                    name={`${item.name}`}
-                                                    key={item.key}
-                                                    {...formItemLayout}
-                                                >
-                                                    {getFieldDecorator(item.name, {
-                                                        rules: [
-                                                        {
-                                                            required: !item.noRequired,
-                                                            message: item.name === 'numRetry' ? `请输入${item.label}(0 ~ 3的整数)` : `请输入${item.label}(正整数)`,
-                                                            pattern: new RegExp(/^[1-9]\d*$/, 'g'),
-                                                            max: item.name === 'numRetry' ? 3 : null,
-                                                            min: 0,
-                                                        },
-                                                        ],
-                                                    })(
-                                                        <InputNumber key={item.name} style={ item.name === 'retryInterval' ? inputWidth : { width: '100%' }} placeholder={`请输入${item.label}`}/>,
-                                                    )}
-                                                     <div style={{ display: 'inline' }}>
-                                                        { item.name === 'retryInterval' ? (<Tag style={{ fontSize: '13px' }} key={item.name}>毫秒</Tag>) : null }
-                                                    </div>
-                                                </Form.Item>
-                                            );
-
-                                    case 'insertForm':
-                                        return (
-                                            // eslint-disable-next-line max-len
-                                            <Form.Item label={item.label} {...formItemLayout} key={item.key}>
+                        if (item.name === 'id') return null;
+                            switch (item.type0) {
+                                case 'text':
+                                    return (
+                                        <Form.Item
+                                            label={`${item.label}`}
+                                            name={`${item.name}`}
+                                            key={item.key}
+                                            {...formItemLayout}
+                                        >
                                             {getFieldDecorator(item.name, {
                                                 rules: [
                                                 {
-                                                    required: !item.noRequired,
+                                                    required: item.noRequired ? false : true,
                                                     message: `请输入${item.label}`,
                                                 },
                                                 ],
                                             })(
-                                                <InsertFrom action="create" key={item.name} label={item.label} required="true" name={item.name}/>,
+                                                item.type === 'input' ? <Input placeholder={`请输入${item.label}`} key={item.name} maxLength={50} />
+                                                                        : <TextArea placeholder={`请输入${item.label}`} key={item.name}></TextArea>,
                                             )}
-                                            </Form.Item>
-                                        );
-                                    case 'taskDependency':
-                                        return (
-                                            <Form.Item label={item.label} {...formItemLayout} key={item.key}>
+                                                <div style={{ display: 'flex' }}>
+                                                { item.name === 'retryInterval' ? (<Tag style={{ fontSize: '13px' }} key={item.name}>毫秒</Tag>) : null }
+                                            </div>
+                                        </Form.Item>
+                                    );
+                                case 'inputNum':
+                                    return (
+                                        <Form.Item
+                                            label={`${item.label}`}
+                                            name={`${item.name}`}
+                                            key={item.key}
+                                            {...formItemLayout}
+                                        >
                                             {getFieldDecorator(item.name, {
                                                 rules: [
                                                 {
                                                     required: !item.noRequired,
+                                                    message: item.name === 'numRetry' ? `请输入${item.label}(0 ~ 3的整数)` : `请输入${item.label}(正整数)`,
+                                                    pattern: item.name === 'numRetry' ? new RegExp(/^[0-3]\d*$/, 'g') : new RegExp(/^[0-9]\d*$/, 'g'),
+                                                    // max: item.name === 'numRetry' ? 3 : null,
+                                                    // max: 3,
+                                                    // min: 0,
                                                 },
                                                 ],
                                             })(
-                                                // eslint-disable-next-line no-tabs
-                                                <Input style={{ display: 'none' }} key={item.name}></Input>,
+                                                <InputNumber key={item.name} style={ item.name === 'retryInterval' ? inputWidth : { width: '100%' }} placeholder={`请输入${item.label}`}/>,
+                                            )}
+                                                <div style={{ display: 'inline' }}>
+                                                { item.name === 'retryInterval' ? (<Tag style={{ fontSize: '13px' }} key={item.name}>毫秒</Tag>) : null }
+                                            </div>
+                                        </Form.Item>
+                                    );
+                                case 'insertForm':
+                                    return (
+                                        // eslint-disable-next-line max-len
+                                        <Form.Item label={item.label} {...formItemLayout} key={item.key}>
+                                        {getFieldDecorator(item.name, {
+                                            rules: [
+                                            {
+                                                required: !item.noRequired,
+                                                message: `请输入${item.label}`,
+                                            },
+                                            ],
+                                        })(
+                                            <InsertFrom action="create" key={item.name} label={item.label} required="true" name={item.name}/>,
+                                        )}
+                                        </Form.Item>
+                                    );
+                                case 'taskDependency':
+                                    return (
+                                        <Form.Item label={item.label} {...formItemLayout} key={item.key}>
+                                        {getFieldDecorator(item.name, {
+                                            rules: [
+                                            {
+                                                required: !item.noRequired,
+                                            },
+                                            ],
+                                        })(
+                                            // eslint-disable-next-line no-tabs
+                                            <Input style={{ display: 'none' }} key={item.name}></Input>,
+                                        )
+                                        }
+                                        <Tooltip title="解析任务依赖">
+                                            <Button style={{ display: 'inline', marginRight: '10px' }} shape="circle" icon="search" loading={this.state.iconLoading} onClick={e => this.onAnalyse(e)}></Button>
+                                        </Tooltip>
+                                        {this.state.dependencyList.length > 0 ? <span style={{ fontSize: '15px' }} >{this.state.dependencyList}</span> : null}
+                                        </Form.Item>
+                                    )
+                                case 'select':
+                                    return (
+                                        <Form.Item
+                                            label={`${item.label}`}
+                                            name={`${item.name}`}
+                                            key={item.key}
+                                            {...formItemLayout}
+                                        >
+                                            {getFieldDecorator(item.name, {
+                                                rules: [
+                                                    {
+                                                    required: !item.noRequired,
+                                                    message: `请输入${item.label}`,
+                                                    validator: this.validator,
+                                                    // type: item.dataType,
+                                                    },
+                                                ],
+                                            })(
+                                                <Select key={item.name} placeholder={`请输入${item.label}`}>
+                                                    {this.state.proList.map(v => (<Select.Option key={v}>{v}</Select.Option>))}
+                                                </Select>,
                                             )
                                             }
-                                            <Tooltip title="解析任务依赖">
-                                                <Button style={{ display: 'inline', marginRight: '10px' }} shape="circle" icon="search" loading={this.state.iconLoading} onClick={e => this.onAnalyse(e)}></Button>
-                                            </Tooltip>
-                                            {this.state.dependencyList.length > 0 ? <span style={{ fontSize: '15px' }} >{this.state.dependencyList}</span> : null}
-                                            </Form.Item>
-                                        )
-                                    case 'select':
-                                        return (
-                                            <Form.Item
-                                                label={`${item.label}`}
-                                                name={`${item.name}`}
-                                                key={item.key}
-                                                {...formItemLayout}
-                                            >
-                                                {getFieldDecorator(item.name, {
-                                                    rules: [
-                                                        {
-                                                        required: !item.noRequired,
-                                                        message: `请输入${item.label}`,
-                                                        validator: this.validator,
-                                                        // type: item.dataType,
-                                                        },
-                                                    ],
-                                                })(
-                                                    <Select key={item.name}>
-                                                        {this.state.proList.map(v => (<Select.Option key={v}>{v}</Select.Option>))}
-                                                    </Select>,
-                                                )
-                                                }
-                                            </Form.Item>
-                                        )
-                                    default: return null;
-                                }
-                            } else return null;
+                                        </Form.Item>
+                                    )
+                                default: return null;
+                            }
                         })
                     }
                     <Form.Item {...tailLayout}>
                         <Button type="primary" onClick={this.onAdd}>立即创建</Button>
                         <Button type="dashed" style={{ marginLeft: '10px' }}>取消</Button>
-
                     </Form.Item>
                 </Form>
             </div>

@@ -4,8 +4,8 @@ import { Breadcrumb, Form, Input, Button, Spin, Select, Tag, InputNumber, Toolti
 import Link from 'umi/link';
 import { connect } from 'dva';
 
-import options from './options'
-import InsertFrom from './InsertForm'
+import options from './components/options'
+import InsertFrom from './components/Input/InsertForm'
 import { taskDependency, getProList } from './service'
 
 const { TextArea } = Input;
@@ -48,9 +48,9 @@ export function formatValues(values) {
   delete params.parNode;
   params.dataInputs = (params.dataInputs || []).map(v => v.join('/'));
   params.dataOutputs = (params.dataOutputs || []).map(v => v.join('/'));
-  // params.command = params.command.map((v, index) => ({
-  //   [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
-  // }));
+  params.command = params.command.map((v, index) => ({
+    [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
+  }));
 
   params.numRetry = Number(params.numRetry);
   params.retryInterval = Number(params.retryInterval);
