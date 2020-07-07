@@ -3,7 +3,7 @@ import { Breadcrumb, Cascader, Button } from 'antd';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SearchOutlined } from '@ant-design/icons';
 import Link from 'umi/link';
-
+import WeeklyInc from '../../components/WeeklyInc'
 
 const options = [
     {
@@ -78,6 +78,7 @@ class TasksRelationship extends React.Component {
                 <Button style={{ marginLeft: '10px' }} className="search_btn" type="primary" icon={<SearchOutlined />}>
                     Search
                 </Button>
+                <WeeklyInc option={options}></WeeklyInc>
             </div>
         )
     }

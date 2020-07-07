@@ -7,6 +7,12 @@ export default [
     ],
   },
   {
+    path: '/account',
+    routes: [
+      { path: '/account', component: './User/Setting' },
+    ],
+  },
+  {
     path: '/',
     component: '../layouts/BasicLayout',
     routes: [
@@ -35,7 +41,7 @@ export default [
             name: 'hbase',
             component: './Dataset/AllDataset',
           },{
-            path: '/dataset/ElasticSearch',
+            path: '/dataset/ES',
             name: 'elasticSearch',
             component: './Dataset/AllDataset',
           },{
@@ -43,7 +49,7 @@ export default [
             name: 'hive',
             component: './Dataset/AllDataset',
           },{
-            path: '/dataset/ArangoDB',
+            path: '/dataset/Arango',
             name: 'arangoDB',
             component: './Dataset/AllDataset',
           },

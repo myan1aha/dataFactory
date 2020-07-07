@@ -17,6 +17,6 @@ const options = [
   { name: 'retryInterval', label: '失败重启间隔', type0: 'inputNum', type: 'inputNum', isEdit: true },
   { name: 'failEmails', label: '失败邮件告警', type0: 'text', type: 'input', noRequired: true, isEdit: true },
   { name: 'description', label: '基本描述', type0: 'text', type: 'textarea', isEdit: true },
-  { name: 'owner', label: '负责人', type0: 'text', type: 'input', isEdit: true },
+  // { name: 'owner', label: '负责人', type0: 'text', type: 'input', isEdit: true },
 ];
 export default options;

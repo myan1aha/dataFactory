@@ -2,8 +2,9 @@
  * request 网络请求工具
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
+import React from 'react';
 import { extend } from 'umi-request';
-import { notification } from 'antd';
+import { Modal } from 'antd';
 import { getAuthority } from '@/utils/authority';
 
 const codeMessage = {
@@ -27,28 +28,45 @@ const codeMessage = {
  * 异常处理程序
  */
 
+function errorDetail(title, msg) {
+  Modal.error({
+    title,
+    content: msg,
+  });
+}
+
 const errorHandler = error => {
   const { response } = error;
+  let title; let msg;
   if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
+    msg = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
+    title = `请求错误 ${status}: ${url}`;
+    // notification.error({
+    //   message: `请求错误 ${status}: ${url}`,
+    //   description: errorText,
+    // });
   } else if (!response) {
-    if(error.name==='customError'){
-      notification.error({
-        description: error.message,
-        message: '请求错误',
-      });
-    }else{
-      notification.error({
-        description: '您的网络发生异常，无法连接服务器',
-        message: '网络异常',
-      });
+    if (error.name === 'customError') {
+      // notification.error({
+      //   description: error.message,
+      //   message: '请求错误',
+      // });
+      title = '请求错误';
+      msg = error.message;
+      // return (
+      //   <ModalError msg={error.message}></ModalError>
+      // )
+    } else {
+      title = '您的网络发生异常，无法连接服务器';
+      msg = '网络异常';
     }
+      // notification.error({
+      //   description: '您的网络发生异常，无法连接服务器',
+      //   message: '网络异常',
+      // });
   }
+  errorDetail(title, msg);
   return response;
 };
 
@@ -87,13 +105,12 @@ request.interceptors.response.use(async (response, options) => {
   const { header, body } = data;
   if (header.code === '200' || header.code === 200) {
     return body || {};
-  } else {
-    const { message } = header;
-    const error = new Error();
-    error.name = 'customError';
-    error.message = message;
-    throw error;
   }
+  const { message } = header;
+  const error = new Error();
+  error.name = 'customError';
+  error.message = message;
+  throw error;
 });
 
 export default request;

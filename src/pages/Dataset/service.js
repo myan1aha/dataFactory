@@ -18,8 +18,8 @@ export async function getOnlineList() {
 
 //添加实例
 export async function addServer(params) {
-    console.log('addServer', params)
-    const result = await request('meta/server/create', {
+    console.log('addServer', params);
+    const result = await request('/meta/server/create', {
       method: 'POST',
       data: params,
     });
@@ -37,7 +37,7 @@ export async function importEntityChildren(params) {
 }
 
 //删除实例
-export async function deleteEntity(param) {
+export async function deleteEntity(params) {
     console.log(params);
     const result = await request('/meta/delete', {
         method: 'POST',

@@ -1,13 +1,13 @@
 export default {
-  navTheme: 'dark',
-  primaryColor: '#365499',
+  // navTheme: 'dark',
+  primaryColor: '#fff',
   layout: 'sidemenu',//sidemenu
   contentWidth: 'Fluid',
   fixedHeader: true,
   siderWidth: 230,
   autoHideHeader: true,
   fixSiderbar: true,
-  colorWeak: false,
+  colorWeak: true,
   menu: {
     locale: true,
   },

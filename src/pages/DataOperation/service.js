@@ -23,8 +23,15 @@ export async function deleteOnlineList(params) {
     return result;
 }
 
-//获取实例详情
+// 获取实例详情
 export async function getOnlineListDetail(params) {
-    const result = await request(`/meta/get/entity${params ? `?${stringify(params)}` : ''}`)
+    const result = await request(`/meta/get/entity${params ? `?${stringify(params)}` : ''}`);
+    return result;
+}
+
+// 获取一周增量
+export async function getWeeklyInc(params) {
+    // console.log(params);
+    const result = await request(`/meta/onlineTable/weekIncrement${params ? `?${stringify(params)}` : ''}`);
     return result;
 }

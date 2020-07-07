@@ -90,8 +90,14 @@ class DisplayTable extends React.Component {
     }
 
     async componentDidMount() {
+      let type = this.props.typeName;
+      if (type === 'ElasticSearch') {
+        type = 'ES';
+      } else if (type === 'ArangoDB') {
+        type = 'Arango';
+      }
       const data = await getServerDetail({
-          type: this.props.typeName,
+          type,
       })
       this.setState({
           dataSrc: data,
@@ -133,7 +139,10 @@ class DisplayTable extends React.Component {
 
     deleteEntity = async id => {
       const res = await deleteEntity({ entityId: id });
-      console.log(res);
+      if (res) {
+        // this.props.history.go(0);
+
+      }
     }
 
     render() {

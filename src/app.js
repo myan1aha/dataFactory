@@ -1,3 +1,5 @@
+import { WindowsFilled } from '@ant-design/icons';
+
 let authRoutes = null;
 function filterRoute(menuList, routes) {
   for (let i = 0; i < routes.length; i++) {
@@ -38,21 +40,45 @@ export function patchRoutes(routes) {
   // }
 }
 
+const permissionModel = {
+  namespace: 'permission',
+  state: {},
+  reducers: {
+    save(state, { payload }) {
+      return { ...state, ...payload };
+    },
+  },
+};
+
+const backToLogin = oldRender => {
+  window.g_app.model({ ...permissionModel, state: authRoutes });
+  console.log(backToLogin);
+  const router = require('umi/router');
+  router.push('/user/login');
+  oldRender();
+};
+
 export function render(oldRender) {
   let url = '/api/project/assignPermission';
   if (process.env.NODE_ENV === 'production') {
     url = process.env.API_HOST + url;
   }
-  const token = localStorage.getItem('dqkkToken');
+  // const token = localStorage.getItem('dqkkToken');
+  const token = sessionStorage.getItem('userId');
+  // if (!token) {
+  //   window.location.href = '/user/login';
+  // }
   if (!process.env.AUTH) {
+    console.log(process.env);
     oldRender();
     return;
   }
+
   if (token) {
     // 获取permission，存储在globaldva中, timeout设置
     // 优化： 入场loading
     // 思考： 为什么不在layout中做fetch，1.闪屏
-    fetch(url, {
+    fetch('url', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -78,26 +104,11 @@ export function render(oldRender) {
         backToLogin(oldRender);
       });
   } else {
+    console.log('no token');
     backToLogin(oldRender);
   }
 }
-const backToLogin = oldRender => {
-  window.g_app.model({ ...permissionModel, state: authRoutes });
 
-  const router = require('umi/router');
-  router.push('/user/login');
-  oldRender();
-};
-
-const permissionModel = {
-  namespace: 'permission',
-  state: {},
-  reducers: {
-    save(state, { payload }) {
-      return { ...state, ...payload };
-    },
-  },
-};
 
 export const dva = {
   config: {

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Table, Breadcrumb, Popconfirm, message, Spin, Modal, Icon, Input, Select, Tooltip, Button, List, Form } from 'antd';
 import Link from 'umi/link';
-import { getSubsDetail } from './service'
-
-import importItems from './importItems';
 import { connect } from 'dva';
+import request from '@/utils/request';
+import { getWeeklyInc } from './service'
+import WeeklyInc from '../../components/WeeklyInc'
+import importItems from './importItems';
 
 const { TextArea } = Input;
 const layout = {
@@ -47,6 +48,7 @@ const formItemLayout = {
 };
 
 const dbType = ['Mongo', 'Mysql', 'Hive', 'Hbase', 'Es', 'ArangoDB'];
+const add = ['1', '2', '3', '4'];
 
 @Form.create()
 @connect(({ dataOperation, loading }) => ({
@@ -61,8 +63,10 @@ class DisplayTable extends React.Component {
           modalVisibal: false,
           // type: dbType,
           selectOptions: [],
+          selectItems: [],
           detailModal: false,
           entityDetail: '',
+          weeklyInc: {},
         };
         this.columns = [
             // {
@@ -148,13 +152,6 @@ class DisplayTable extends React.Component {
           ];
     }
 
-    // async componentDidMount() {
-    //   const data = await this.getOnlineList()
-    //   this.setState({
-    //       dataSrc: data,
-    //   })
-    // }
-
     componentDidMount() {
       this.props.dispatch({
         type: 'dataOperation/getOnlineList',
@@ -168,11 +165,6 @@ class DisplayTable extends React.Component {
       })
     }
 
-    // getOnlineList = async () => {
-    //   const res = await getOnlineList();
-    //     return res;
-    // }
-
     showModal = () => {
       this.setState({
         modalVisibal: true,
@@ -183,20 +175,43 @@ class DisplayTable extends React.Component {
       this.setState({
         modalVisibal: false,
         detailModal: false,
+        selectOptions: [],
+        selectItems: [],
       })
     }
 
-    importOnlineList = () => {
-
+    importOnlineList = async () => {
+      const { getFieldsValue } = this.props.form;
+      const { TableName, description } = getFieldsValue();
+      const params = {
+        entityId: TableName,
+        description,
+      }
+      console.log(params);
+      const res = await request('/meta/onlineTable/add', {
+        method: 'POST',
+        data: params,
+      })
+      this.closeModal();
+      this.props.dispatch({
+        type: 'dataOperation/getOnlineList',
+        payload: {
+          page: 1,
+          pageSize: 10,
+          filter: { 
+            dbType: '',
+          },
+        },
+      })
     }
 
-    select = async val => {
-      const res = await getSubsDetail(val);
-      console.log(res);
-    }
+    // select = async val => {
+    //   const res = await getSubsDetail(val);
+    //   console.log(res);
+    // }
 
     // 查看表详情
-    getOnlineListDetail = record => {
+    getOnlineListDetail = async record => {
       // this.props.dispatch({
       //   type: 'dataOperation/getOnlineListDetail',
       //   payload: {
@@ -208,11 +223,22 @@ class DisplayTable extends React.Component {
       // const { setFieldsValue } = this.props.form;
       // console.log(record);
       // this.props.form.setFieldsValue(record);
+
+      const res = await getWeeklyInc({
+        entityId: record.id,
+      });
+
       this.setState({
         detailModal: true,
-        entityDetail: record,
+        // entityDetail: record,
+        weekly: res,
       })
     }
+
+    // selectChange = val => {
+    //   console.log(val);
+
+    // }
 
     deleteOnlineList = async (e, id) => {
       e.preventDefault();
@@ -224,14 +250,54 @@ class DisplayTable extends React.Component {
         },
       }).then(() => {
         message.success('已删除');
+        this.props.dispatch({
+          type: 'dataOperation/getOnlineList',
+          payload: {
+            page: 1,
+            pageSize: 10,
+            filter: {
+              dbType: '',
+            },
+          },
+        })
       })
     }
 
-    onSelect = async val => {
-      const { selectOptions } = this.state;
+    onSelect = async (val, option) => {
+      const { selectItems, selectOptions } = this.state;
       selectOptions.push(val);
+      // console.log(selectOptions);
       if (selectOptions.length === 1) {
-        // const res = await request('')
+        const res = await request(`/meta/server/get?type=${val}`);
+        if (res) {
+          const items = [];
+          // const ids = [];
+          res.forEach(v => {
+            items.push({
+              id: v.id,
+              name: v.name,
+            })
+          })
+          this.setState({
+            selectItems: items,
+          })
+        }
+      } else if (selectOptions.length <= 3) {
+        console.log(option.key);
+        // const params = selectItems[`${option.key}`];
+        const res = await request(`/meta/get/subs?entityId=${option.key}`);
+        if (res) {
+          const items = [];
+          res.collection.forEach(v => {
+            items.push({
+              id: v.id,
+              name: v.name,
+            })
+          })
+          this.setState({
+            selectItems: items,
+          })
+        }
       }
     }
 
@@ -250,13 +316,14 @@ class DisplayTable extends React.Component {
                 </Breadcrumb.Item>
                 <Breadcrumb.Item>{this.props.typeName}</Breadcrumb.Item>
             </Breadcrumb> */}
-            <Button style={{ marginBottom: '10px' }} onClick={this.showModal}>导入在线表</Button>
+            <Button style={{ marginBottom: '10px' }} onClick={this.showModal}>新增在线表</Button>
             <Modal
-            title="导入在线表"
+            title="新增在线表"
             onOk={this.importOnlineList}
-            okText="确认导入"
+            okText="确认"
             onCancel={this.closeModal}
             visible={this.state.modalVisibal}
+            destroyOnClose
             >
               <Form {...layout} name="basic">
                 {importItems.map(item => {
@@ -297,8 +364,10 @@ class DisplayTable extends React.Component {
                                     },
                                 ],
                             })(
-                                <Select key={item} placeholder={`请输入${item.label}`} onSelect={val => this.select(val)}>
-                                    {item.name === 'dbType' ? dbType.map(v => (<Select.Option key={v}>{v}</Select.Option>)) : null}
+                                <Select key={item} placeholder={`请输入${item.label}`} onSelect={(val, option) => this.onSelect(val, option)}>
+                                    {item.name === 'dbType' ? dbType.map(v => (<Select.Option key={v}>{v}</Select.Option>))
+                                    : this.state.selectItems.map(v => (<Select.Option key={v.id}>{v.name}</Select.Option>))
+                                    }
                                 </Select>,
                             )
                             }
@@ -314,14 +383,19 @@ class DisplayTable extends React.Component {
                 dataSource={onlineList}
                 // onRow={ records => { records.key = `${records.id}`;  records.rowKey = `${records.id}`  }}
                 rowKey={ record => record.id }
+                // onChange={this.onTableChange()}
             />
             <Modal
-            title="详情"
+            title="数据近7日增量"
             visible={this.state.detailModal}
             onOk={this.closeModal}
             onCancel={this.closeModal}
+            footer={
+              [] // 设置footer为空，去掉 取消 确定默认按钮
+            }
+  
             >
-              <Form>
+              {/* <Form>
                 {entityDetailKey.map(item => (
                   <Form.Item
                     label={item.label}
@@ -336,7 +410,8 @@ class DisplayTable extends React.Component {
                     }
                   </Form.Item>
                 ))}
-              </Form>
+              </Form> */}
+              <WeeklyInc weekly={this.state.weekly}></WeeklyInc>
             </Modal>
           </div>
         )

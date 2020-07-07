@@ -11,10 +11,14 @@ export async function queryNotices() {
   return request('/api/notices');
 }
 export async function accountLogin(params) {
-  const data = {
-    ...params,
-    password: encrypt(params.password),
-  };
-  const result = await request('/user/login', { method: 'post', data });
+  const data = { ...params }
+  // const data = {
+  //   ...params,
+  //   password: encrypt(params.password),
+  // };
+  const formData = new FormData();
+  formData.append('phoneNumber', data.phoneNumber);
+  formData.append('password', data.password);
+  const result = await request('/user/login', { method: 'POST', data: formData });
   return result;
 }

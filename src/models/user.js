@@ -29,7 +29,11 @@ const UserModel = {
             type: 'changeLoginStatus',
             payload: response,
           });
-          window.location.href = '/';
+          yield put({
+            type: 'saveCurrentUser',
+            payload: response.userName,
+          })
+          return true;
         }
       }
     },
@@ -37,7 +41,8 @@ const UserModel = {
       yield put({
         type: 'changeLoginStatus',
         payload: {
-          token: '',
+          userName: '',
+          userId: '',
         },
       });
       yield put(
@@ -54,7 +59,8 @@ const UserModel = {
     },
     changeLoginStatus(state, { payload }) {
       // 存储token信息
-      setAuthority(payload.token);
+      setAuthority(payload);
+      // setAuthority(payload.sessionId);
       return { ...state, loginStatus: payload };
     },
 

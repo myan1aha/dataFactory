@@ -116,6 +116,7 @@ export async function deleteTask(params) {
     method: 'POST',
     data: params,
   });
+  // console.log(result);
   return result;
 }
 

@@ -3,6 +3,8 @@ import { connect } from 'dva';
 import { Form, Icon, Input, Button, Checkbox, Alert, Carousel } from 'antd';
 // import router from 'umi/router';
 import styles from './Login.less';
+import request from 'umi-request';
+import { stringify } from 'qs';
 
 const calarray = [
   { title: 'title1', subTitle: ['subtitle1'] },
@@ -12,22 +14,27 @@ const calarray = [
   },
   { title: 'title3', subTitle: ['subtitle3'] },
 ];
-@connect(({ loading }) => ({
+@connect(({ loading, login }) => ({
   loading: false,
+  login,
 }))
 class LoginPageForm extends Component {
   state = {
     error: null,
   };
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         this.props.dispatch({
           type: 'login/login',
           payload: { ...values, errorCallBack: this.errorCallBack },
+        }).then(() => {
+          // console.log(this.props);
+          this.props.history.push('/');
         });
+
       }
     });
   };
@@ -46,6 +53,7 @@ class LoginPageForm extends Component {
     const { error } = this.state;
     const { getFieldDecorator } = this.props.form;
     const { loading } = this.props;
+    console.log(this.props);
     return (
       <div className={styles.container}>
         <div className={styles.content}>
@@ -78,7 +86,7 @@ class LoginPageForm extends Component {
                 </Form.Item>
                 {error ? <Form.Item>{this.renderMessage(error)}</Form.Item> : null}
                 <Form.Item label="手机号码" style={{ marginBottom: '0.8rem' }}>
-                  {getFieldDecorator('mobile', {
+                  {getFieldDecorator('phoneNumber', {
                     rules: [{ required: true, message: '请输入手机号码!' }],
                   })(
                     <Input

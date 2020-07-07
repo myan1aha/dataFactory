@@ -41,9 +41,10 @@ function formatValues(values) {
   params.command = params.command.map((v, index) => ({
     [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
   }));
-
   params.numRetry = Number(params.numRetry);
   params.retryInterval = Number(params.retryInterval);
+  params.owner = sessionStorage.getItem('userName');
+  console.log(params.owner);
   return params;
 }
 

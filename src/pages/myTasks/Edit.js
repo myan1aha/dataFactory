@@ -51,6 +51,7 @@ export function formatValues(values) {
   params.command = params.command.map((v, index) => ({
     [`command${!index ? '' : '.'}${!index ? '' : index}`]: v,
   }));
+  params.owner = sessionStorage.getItem('userName');
 
   params.numRetry = Number(params.numRetry);
   params.retryInterval = Number(params.retryInterval);

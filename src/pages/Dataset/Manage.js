@@ -54,19 +54,12 @@ class Manage extends React.Component {
     };
 
     onAddServer = async values => {
-        console.log(values);
-        // this.props
-        // .dispatch({
-        //     type: 'server/addServer',
-        //     payload: values,
-        // })
-        // .then(res => {
-            // if (res) {
-            // this.props.history.push({ pathname: '/myTasks/list' });
-            // }
-        // });
         const res = await addServer(values);
-        console.log(res);
+        console.log(values);
+        if (res) {
+            const { type } = values;
+            this.props.history.push(`/dataset/${type}`);
+        }
     };
 
     render() {
