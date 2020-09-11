@@ -139,18 +139,7 @@ class TasksCreate extends React.Component {
         }
         return (
             <div>
-                {/* <Breadcrumb >
-                    <Breadcrumb.Item>
-                        <Link to="/">Home</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        <Link to="/myTasks">Tasks Application</Link>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        Tasks Creation
-                    </Breadcrumb.Item>
-                </Breadcrumb>
-                <br></br> */}
+                
                 <Form {...layout} name="basic">
                     {options.map(item => {
                         if (item.name === 'id') return null;
